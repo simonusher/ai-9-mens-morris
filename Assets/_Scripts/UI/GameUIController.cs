@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class GameUIController : MonoBehaviour
 {
-    [SerializeField] private TMP_Dropdown firstPlayerTypeDropdown;
+    [SerializeField] private TMP_Dropdown gameTypeDropdown;
     [SerializeField] private TMP_Dropdown firstPlayerAlgorithmDropdown;
     [SerializeField] private TMP_Dropdown firstPlayerHeuristicDropdown;
-    [SerializeField] private TMP_Dropdown secondPlayerTypeDropdown;
     [SerializeField] private TMP_Dropdown secondPlayerAlgorithmDropdown;
     [SerializeField] private TMP_Dropdown secondPlayerHeuristicDropdown;
 
@@ -22,31 +22,75 @@ public class GameUIController : MonoBehaviour
     [SerializeField] private Button playButton;
     [SerializeField] private Toggle logToFileToggle;
 
+    [SerializeField] private Button[] pawnButtons;
+
+    [SerializeField] private Sprite firstPlayerPawnImage;
+    [SerializeField] private Sprite secondPlayerPawnImage;
+
+    private GameEngine gameEngine = null;
+
     private void Awake()
     {
-        firstPlayerTypeDropdown.onValueChanged.AddListener((int type) => SetAIDropdownsActive(PlayerNumber.First, type));
-        secondPlayerTypeDropdown.onValueChanged.AddListener((int type) => SetAIDropdownsActive(PlayerNumber.Second, type));
+        gameTypeDropdown.onValueChanged.AddListener(gameType => SetAIDropdownsActive(gameType));
+        InitPawnButtonHandlers();
         playButton.onClick.AddListener(StartGame);
     }
 
-    private void SetAIDropdownsActive(PlayerNumber player, int playerType)
+    private void InitPawnButtonHandlers()
     {
-        bool dropdownsActive = playerType == (int)PlayerType.AI;
-        TMP_Dropdown algorithmDropdown = secondPlayerAlgorithmDropdown;
-        TMP_Dropdown heuristicDropdown = secondPlayerHeuristicDropdown;
-        if (player == PlayerNumber.First)
+        for(int i = 0; i < pawnButtons.Length; i++)
         {
-            algorithmDropdown = firstPlayerAlgorithmDropdown;
-            heuristicDropdown = firstPlayerHeuristicDropdown;
+            int x = i;
+            pawnButtons[i].onClick.AddListener(() => HandleButtonClick(x));
         }
+    }
 
-        algorithmDropdown.interactable = dropdownsActive;
-        heuristicDropdown.interactable = dropdownsActive;
+    private void SetAIDropdownsActive(int gameType)
+    {
+        if(gameType == 0)
+        {
+            firstPlayerAlgorithmDropdown.interactable = false;
+            firstPlayerHeuristicDropdown.interactable = false;
+        }
+        else
+        {
+            firstPlayerAlgorithmDropdown.interactable = true;
+            firstPlayerHeuristicDropdown.interactable = true;
+        }
     }
 
 
     void StartGame()
     {
-        Debug.Log("Game starting");
+        gameEngine = new GameEngine(false);
+        OnBoardUpdated(gameEngine.currentBoard);
+        gameEngine.OnBoardChanged += OnBoardUpdated;
+    }
+
+    void OnBoardUpdated(Board newBoard)
+    {
+        for(int i = 0; i < pawnButtons.Length; i++)
+        {
+            Field field = newBoard.GetField(i);
+            if(field.PawnPlayerNumber == PlayerNumber.FirstPlayer)
+            {
+                pawnButtons[i].image.sprite = firstPlayerPawnImage;
+            } else if (field.PawnPlayerNumber == PlayerNumber.SecondPlayer)
+            {
+                pawnButtons[i].image.sprite = secondPlayerPawnImage;
+            } else
+            {
+                pawnButtons[i].image.sprite = null;
+            }
+        }
+    }
+
+    void HandleButtonClick(int fieldIndex)
+    {
+        if(gameEngine != null)
+        {
+            Debug.Log(fieldIndex);
+            gameEngine.HandleSelection(fieldIndex);
+        }
     }
 }

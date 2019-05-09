@@ -2,7 +2,16 @@
 
 public class Board
 {
-    private static int DEFAULT_NUMBER_OF_FIELDS = 24;
+    public static int DEFAULT_NUMBER_OF_FIELDS = 24;
+
+    public List<Field> Fields
+    {
+        get
+        {
+            return fields;
+        }
+    }
+
     private List<Field> fields;
     public Board()
     {
@@ -26,4 +35,5 @@ public class Board
     {
         return fields[index];
     }
+
 }
