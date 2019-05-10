@@ -3,12 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public enum GameType
-{
-    PlayerVsAi,
-    AiVsAi
-}
-
 public enum MillGameStage
 {
     PlacingPawns,
@@ -22,6 +16,7 @@ public class GameEngine
     private static int POSSIBLE_MILLS = 16;
     private static int PLAYERS_PAWNS = 9;
     private Mill[] mills;
+    private List<List<int>> possibleMoveIndices;
     private string[] fieldNames;
 
     private bool shouldLogToFile;
@@ -34,20 +29,20 @@ public class GameEngine
     public delegate void BoardChanged(Board newBoard);
     public event BoardChanged OnBoardChanged = delegate { };
 
-
     private Player firstPlayer;
     private Player secondPlayer;
     private PlayerNumber currentMovingPlayerNumber;
 
     private int selectedFieldIndex;
 
+    
     private int pawnsToRemove;
-
     private int lastTurnMills;
 
     public GameEngine(bool shouldLogToFile)
     {
         InitializeMills();
+        InitializePossibleMoveIndices();
         InitializeFieldNames();
         InitializeBoard();
         InitializePlayers();
@@ -103,7 +98,7 @@ public class GameEngine
             SwitchPlayer();
         }
     }
-    
+
     private void HandlePawnPlacing(int fieldIndex)
     {
         if (currentBoard.GetField(fieldIndex).PawnPlayerNumber == PlayerNumber.None)
@@ -210,6 +205,35 @@ public class GameEngine
         mills[i++] = (new Mill(8, 12, 17));
         mills[i++] = (new Mill(5, 13, 20));
         mills[i++] = (new Mill(2, 14, 23));
+    }
+
+    private void InitializePossibleMoveIndices()
+    {
+        possibleMoveIndices = new List<List<int>>(Board.DEFAULT_NUMBER_OF_FIELDS);
+        possibleMoveIndices.Add(new List<int> { 1, 9 });
+        possibleMoveIndices.Add(new List<int> { 0, 2, 4 });
+        possibleMoveIndices.Add(new List<int> { 1, 14 });
+        possibleMoveIndices.Add(new List<int> { 4, 10 });
+        possibleMoveIndices.Add(new List<int> { 1, 3, 5, 7});
+        possibleMoveIndices.Add(new List<int> { 4, 13 });
+        possibleMoveIndices.Add(new List<int> { 7, 11 });
+        possibleMoveIndices.Add(new List<int> { 4, 6, 8 });
+        possibleMoveIndices.Add(new List<int> { 7, 12 });
+        possibleMoveIndices.Add(new List<int> { 0, 10, 21 });
+        possibleMoveIndices.Add(new List<int> { 3, 9, 11, 18 });
+        possibleMoveIndices.Add(new List<int> { 6, 10, 15 });
+        possibleMoveIndices.Add(new List<int> { 8, 13, 17 });
+        possibleMoveIndices.Add(new List<int> { 5, 12, 14, 20 });
+        possibleMoveIndices.Add(new List<int> { 2, 13, 23 });
+        possibleMoveIndices.Add(new List<int> { 11, 16 });
+        possibleMoveIndices.Add(new List<int> { 15, 17, 19 });
+        possibleMoveIndices.Add(new List<int> { 12, 16 });
+        possibleMoveIndices.Add(new List<int> { 10, 19 });
+        possibleMoveIndices.Add(new List<int> { 16, 18, 20, 22 });
+        possibleMoveIndices.Add(new List<int> { 13, 19 });
+        possibleMoveIndices.Add(new List<int> { 9, 22 });
+        possibleMoveIndices.Add(new List<int> { 19, 21, 23 });
+        possibleMoveIndices.Add(new List<int> { 14, 22 });
     }
 
     private void InitializeFieldNames()
