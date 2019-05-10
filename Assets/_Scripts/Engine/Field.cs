@@ -13,6 +13,7 @@ public class Field
 {
     public PlayerNumber PawnPlayerNumber { get; set; }
     public int LastFieldIndex { get; set; }
+    public static int FIELD_INDEX_UNSET = -1;
 
     public Field()
     {
@@ -28,6 +29,6 @@ public class Field
     public void Reset()
     {
         PawnPlayerNumber = PlayerNumber.None;
-        LastFieldIndex = -1;
+        LastFieldIndex = FIELD_INDEX_UNSET;
     }
 }

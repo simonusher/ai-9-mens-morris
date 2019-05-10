@@ -39,9 +39,11 @@ public class GameEngine
     private Player secondPlayer;
     private PlayerNumber currentMovingPlayerNumber;
 
-    private int selectedPawnIndex;
+    private int selectedFieldIndex;
 
     private int pawnsToRemove;
+
+    private int lastTurnMills;
 
     public GameEngine(bool shouldLogToFile)
     {
@@ -52,6 +54,8 @@ public class GameEngine
         millGameStage = MillGameStage.PlacingPawns;
         gameFinished = false;
         pawnsToRemove = 0;
+        lastTurnMills = 0;
+        selectedFieldIndex = Field.FIELD_INDEX_UNSET;
     }
 
     private void InitializePlayers()
@@ -106,9 +110,23 @@ public class GameEngine
         {
             currentBoard.GetField(fieldIndex).PawnPlayerNumber = currentMovingPlayerNumber;
             getCurrentlyMovingPlayer().SetPawn();
-            SwitchPlayer();
+            int millsNumber = CountMills(currentBoard);
+            if (millsNumber > lastTurnMills)
+            {
+                pawnsToRemove = millsNumber - lastTurnMills;
+                lastTurnMills = millsNumber;
+            }
+            else
+            {
+                SwitchPlayer();
+            }
             NotifyBoardChanged();
         }
+    }
+
+    private void HandlePawnMoving(int fieldIndex)
+    {
+        //TODO
     }
 
     private void CheckGameStateChange()
@@ -158,10 +176,8 @@ public class GameEngine
     {
         if(currentMovingPlayerNumber == PlayerNumber.FirstPlayer) {
             return firstPlayer;
-        } else
-        {
-            return secondPlayer;
         }
+        return secondPlayer;
     }
 
     private Player getOtherPlayer()
@@ -170,10 +186,7 @@ public class GameEngine
         {
             return secondPlayer;
         }
-        else
-        {
-            return firstPlayer;
-        }
+        return firstPlayer;
     }
 
 
@@ -226,5 +239,34 @@ public class GameEngine
         fieldNames[21] = "A7";
         fieldNames[22] = "D7";
         fieldNames[23] = "G7";
+    }
+
+    private int CountMills(Board board)
+    {
+        int boardMills = 0;
+        Mill mill;
+        for (int i = 0; i < mills.Length; i++)
+        {
+            mill = mills[i];
+            PlayerNumber playerMillNumber = board.GetField(mill.MillIndices[0]).PawnPlayerNumber;
+            if (playerMillNumber != PlayerNumber.None)
+            {
+                bool millPossible = true;
+                for (int j = 1; j < mill.MillIndices.Count && millPossible; j++)
+                {
+                    if (playerMillNumber != board.GetField(mill.MillIndices[j]).PawnPlayerNumber)
+                    {
+                        millPossible = false;
+                    }
+                }
+
+                if (millPossible)
+                {
+                    boardMills++;
+                }
+            }
+        }
+
+        return boardMills;
     }
 }
