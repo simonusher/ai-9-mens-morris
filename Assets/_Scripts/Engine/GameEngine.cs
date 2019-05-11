@@ -323,14 +323,20 @@ public class GameEngine
 
     public void MakeMove(GameState gameState)
     {
-        if(millGameStage == MillGameStage.PlacingPawns)
+        if(gameState != null)
         {
-            getCurrentlyMovingPlayer().SetPawn();
+            if (millGameStage == MillGameStage.PlacingPawns)
+            {
+                getCurrentlyMovingPlayer().SetPawn();
+            }
+            currentBoard = gameState.Board;
+            lastTurnActiveMills = GetActiveMills(currentBoard);
+            CheckGameStateChange();
+            SwitchPlayer();
+        } else
+        {
+            WinningPlayerNumber = getOtherPlayer().PlayerNumber;
         }
-        currentBoard = gameState.Board;
-        lastTurnActiveMills = GetActiveMills(currentBoard);
-        CheckGameStateChange();
-        SwitchPlayer();
     }
 
     private void InitializeBoard()

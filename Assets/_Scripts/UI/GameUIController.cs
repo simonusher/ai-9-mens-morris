@@ -84,8 +84,9 @@ public class GameUIController : MonoBehaviour
     void StartGame()
     {
         gameEngine = new GameEngine(false);
-        AiPlayer aiPlayer = new RandomAiPlayer(PlayerNumber.SecondPlayer, gameEngine);
-        playersController = new PlayersController(secondAiPlayer: aiPlayer);
+        AiPlayer aiPlayer = new RandomAiPlayer(PlayerNumber.FirstPlayer, gameEngine);
+        AiPlayer aiPlayer2 = new RandomAiPlayer(PlayerNumber.SecondPlayer, gameEngine);
+        playersController = new PlayersController(aiPlayer, aiPlayer2);
         OnBoardUpdated(gameEngine.currentBoard);
         gameEngine.OnBoardChanged += OnBoardUpdated;
         gameEngine.OnGameFinished += OnGameFinished;
