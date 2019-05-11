@@ -35,7 +35,11 @@ public class GameUIController : MonoBehaviour
     private Color emptyColor = new Color(255, 255, 255, 0);
     private Color nonEmptyColor = new Color(255, 255, 255, 255);
 
+    private Color firstPlayerColor = new Color(255, 255, 255, 255);
+    private Color secondPlayerColor = new Color(0, 0, 0, 255);
+
     private GameEngine gameEngine = null;
+    private PlayersController playersController = null;
 
 
     private void Awake()
@@ -80,11 +84,15 @@ public class GameUIController : MonoBehaviour
     void StartGame()
     {
         gameEngine = new GameEngine(false);
+        //AiPlayer aiPlayer = new RandomAiPlayer(PlayerNumber.SecondPlayer, gameEngine);
+        //playersController = new PlayersController(secondAiPlayer: aiPlayer);
         OnBoardUpdated(gameEngine.currentBoard);
         gameEngine.OnBoardChanged += OnBoardUpdated;
         gameEngine.OnGameFinished += OnGameFinished;
         gameEngine.OnPlayerTurnChanged += OnPlayerTurnChanged;
+        //gameEngine.OnPlayerTurnChanged += playersController.OnPlayerTurnChanged;
         playButton.interactable = false;
+        //playersController.StartGame();
     }
 
     private void OnBoardUpdated(Board newBoard)
@@ -121,6 +129,7 @@ public class GameUIController : MonoBehaviour
     private void UpdateTurnText(int playerNumber)
     {
         currentMovingPlayerText.text = string.Format(currentMovingPlayerTemplateText, playerNumber);
+        currentMovingPlayerText.faceColor = playerNumber == 1 ? firstPlayerColor : secondPlayerColor;
     }
 
     private void OnGameFinished(PlayerNumber winningPlayer)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Heuristic
+public interface Heuristic
 {
-
+    double Rate(GameState gameState, PlayerNumber playerNumber);
 }

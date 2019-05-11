@@ -6,8 +6,7 @@ using System.Collections.Generic;
 public enum MillGameStage
 {
     PlacingPawns,
-    NormalPlay,
-    ThreePawnsLeft
+    NormalPlay
 }
 
 
@@ -44,13 +43,22 @@ public class GameEngine
     private List<List<int>> possibleMoveIndices;
     private string[] fieldNames;
 
-    public Board currentBoard { get; private set; }
+    private Board _currentBoard;
+    public Board currentBoard {
+        get {
+            return _currentBoard;
+        }
+        private set {
+            _currentBoard = value;
+            NotifyBoardChanged();
+        }
+    }
 
     private MillGameStage millGameStage;
     
 
-    private Player firstPlayer;
-    private Player secondPlayer;
+    private PlayerData firstPlayer;
+    private PlayerData secondPlayer;
 
     private PlayerNumber _currentMovingPlayerNumber;
     public PlayerNumber CurrentMovingPlayerNumber
@@ -89,8 +97,8 @@ public class GameEngine
 
     private void InitializePlayers()
     {
-        firstPlayer = new Player(PlayerNumber.FirstPlayer, PLAYERS_PAWNS);
-        secondPlayer = new Player(PlayerNumber.SecondPlayer, PLAYERS_PAWNS);
+        firstPlayer = new PlayerData(PlayerNumber.FirstPlayer, PLAYERS_PAWNS);
+        secondPlayer = new PlayerData(PlayerNumber.SecondPlayer, PLAYERS_PAWNS);
     }
 
     public void HandleSelection(int fieldIndex)
@@ -147,13 +155,11 @@ public class GameEngine
 
     private void TogglePawnDeletingOrSwitchPlayer()
     {
-        HashSet<Mill> activeMills = GetActiveMills(currentBoard);
-        HashSet<Mill> newActiveMills = new HashSet<Mill>(activeMills);
-        newActiveMills.ExceptWith(lastTurnActiveMills);
-        if (newActiveMills.Count > 0)
+        MillDifference millDifference = GetMillDifference(lastTurnActiveMills, currentBoard);
+        if (millDifference.NewMills.Count > 0)
         {
-            pawnsToRemove = newActiveMills.Count;
-            lastTurnActiveMills = activeMills;
+            pawnsToRemove = millDifference.NewMills.Count;
+            lastTurnActiveMills = millDifference.TurnActiveMills;
         }
         else
         {
@@ -163,7 +169,7 @@ public class GameEngine
 
     private void HandlePawnMoving(int fieldIndex)
     {
-        Player currentPlayer = getCurrentlyMovingPlayer();
+        PlayerData currentPlayer = getCurrentlyMovingPlayer();
         Field newField = currentBoard.GetField(fieldIndex);
         PlayerNumber selectedFieldPawnPlayer = newField.PawnPlayerNumber;
         if (selectedFieldPawnPlayer == currentPlayer.PlayerNumber)
@@ -185,7 +191,7 @@ public class GameEngine
     private void HandleNormalMove(Field newField)
     {
         List<Field> possibleNewFields = GetPossibleNewFields(lastSelectedField.FieldIndex, currentBoard);
-        if(possibleNewFields.Contains(newField) && lastSelectedField.CanMoveTo(newField))
+        if(possibleNewFields.Contains(newField))
         {
             PerformSelectedMove(newField);
         }
@@ -193,12 +199,64 @@ public class GameEngine
 
     private List<Field> GetPossibleNewFields(int fromIndex, Board board)
     {
+        return GetPossibleNewFields(board.GetField(fromIndex), board);
+    }
+
+    private List<Field> GetPossibleNewFields(Field fromField, Board board)
+    {
         List<Field> possibleFields = new List<Field>();
-        foreach (int index in possibleMoveIndices[fromIndex])
+        foreach (int index in possibleMoveIndices[fromField.FieldIndex])
         {
-            possibleFields.Add(board.GetField(index));
+            Field toField = board.GetField(index);
+            if (fromField.CanMoveTo(toField))
+            {
+                possibleFields.Add(board.GetField(index));
+            }
         }
         return possibleFields;
+    }
+
+    private List<Field> GetPossibleNewFieldsFlying(Field fromField, Board board)
+    {
+        List<Field> possibleFields = new List<Field>();
+        foreach(var toField in board.Fields)
+        {
+            if (fromField.CanMoveTo(toField))
+            {
+                possibleFields.Add(toField);
+            }
+        }
+        return possibleFields;
+    }
+
+    private List<Move> GetAllPossibleMoves(PlayerNumber playerNumber, Board board)
+    {
+        List<Move> allMoves = new List<Move>();
+        List<Field> playersFields = board.GetPlayerFields(playerNumber);
+        int playerPawns = playersFields.Count;
+        if (playerPawns < PlayerData.FLYING_PAWNS_NUMBER)
+        {
+            foreach (var fromField in playersFields)
+            {
+                List<Field> toFields = GetPossibleNewFieldsFlying(fromField, board);
+                foreach (var toField in toFields)
+                {
+                    allMoves.Add(new Move(fromField, toField));
+                }
+            }
+        } else
+        {
+            foreach (var fromField in playersFields)
+            {
+                List<Field> toFields = GetPossibleNewFields(fromField, board);
+                foreach (var toField in toFields)
+                {
+                    allMoves.Add(new Move(fromField, toField));
+                }
+            }
+        }
+        
+        return allMoves;
     }
 
     private void HandleFlying(Field newField)
@@ -223,18 +281,24 @@ public class GameEngine
             if(!firstPlayer.HasPawnsToSet() && !secondPlayer.HasPawnsToSet())
             {
                 millGameStage = MillGameStage.NormalPlay;
+                CheckGameStateChange();
             }
         }
         else
         {
-            if(firstPlayer.PawnsLeft <= LOSING_PAWNS_NUMBER_THRESHOLD)
-            {
-                OnGameFinished(PlayerNumber.SecondPlayer);
-            }
-            else if(secondPlayer.PawnsLeft <= LOSING_PAWNS_NUMBER_THRESHOLD)
-            {
-                OnGameFinished(PlayerNumber.FirstPlayer);
-            }
+            CheckGameFinished(currentBoard);
+        }
+    }
+
+    private void CheckGameFinished(Board board)
+    {
+        if (firstPlayer.PawnsLeft <= LOSING_PAWNS_NUMBER_THRESHOLD)
+        {
+            OnGameFinished(PlayerNumber.SecondPlayer);
+        }
+        else if (secondPlayer.PawnsLeft <= LOSING_PAWNS_NUMBER_THRESHOLD)
+        {
+            OnGameFinished(PlayerNumber.FirstPlayer);
         }
     }
 
@@ -255,9 +319,18 @@ public class GameEngine
         lastSelectedField = null;
     }
 
-    public void MakeMove(Board board)
+    public void MakeMove(GameState gameState)
     {
-
+        if(millGameStage == MillGameStage.PlacingPawns)
+        {
+            getCurrentlyMovingPlayer().SetPawn();
+        }
+        currentBoard = gameState.Board;
+        lastTurnActiveMills = GetActiveMills(currentBoard);
+        firstPlayer.PawnsLeft = gameState.FirstPlayerPawns;
+        secondPlayer.PawnsLeft = gameState.SecondPlayerPawns;
+        CheckGameStateChange();
+        SwitchPlayer();
     }
 
     private void InitializeBoard()
@@ -265,13 +338,90 @@ public class GameEngine
         currentBoard = new Board();
     }
 
-    public List<Board> GetPossibleMoves(PlayerNumber playerNumber, Board previousBoard)
+    public List<GameState> GetPossibleMoves(PlayerNumber playerNumber, Board previousBoard)
     {
-        //TODO
+        HashSet<Mill> previousActiveMills = GetActiveMills(previousBoard);
+        
+        if (millGameStage == MillGameStage.PlacingPawns)
+        {
+            List<Field> emptyFields = previousBoard.GetEmptyFields();
+            List<GameState> gameStates = new List<GameState>();
+            PlayerNumber otherPlayerNumber = playerNumber == PlayerNumber.FirstPlayer ? PlayerNumber.SecondPlayer : PlayerNumber.FirstPlayer;
+            foreach (var emptyField in emptyFields)
+            {
+                Board newBoard = new Board(previousBoard);
+                newBoard.GetField(emptyField.FieldIndex).PawnPlayerNumber = playerNumber;
+                MillDifference millDifference = GetMillDifference(previousActiveMills, newBoard);
+                if(millDifference.NewMills.Count == 0)
+                {
+                    gameStates.Add(GetGameState(newBoard));
+                }
+                else if(millDifference.NewMills.Count == 1)
+                {
+                    List<Field> otherPlayersFields = newBoard.GetPlayerFields(otherPlayerNumber);
+                    foreach(var otherPlayerField in otherPlayersFields)
+                    {
+                        Board boardWithRemovedPawn = new Board(newBoard);
+                        boardWithRemovedPawn.GetField(otherPlayerField.FieldIndex).Reset();
+                        gameStates.Add(GetGameState(boardWithRemovedPawn));
+                    }
+                }
+                else
+                {
+                    List<Field> otherPlayersFields = newBoard.GetPlayerFields(otherPlayerNumber);
+                    for(int i = 0; i < otherPlayersFields.Count - 1; i++)
+                    {
+                        Board boardWithRemovedPawn = new Board(newBoard);
+                        boardWithRemovedPawn.GetField(otherPlayersFields[i].FieldIndex).Reset();
+                        for(int j = i + 1; j < otherPlayersFields.Count; j++)
+                        {
+                            Board boardWithSecondRemovedPawn = new Board(newBoard);
+                            boardWithSecondRemovedPawn.GetField(otherPlayersFields[j].FieldIndex).Reset();
+                            gameStates.Add(GetGameState(boardWithSecondRemovedPawn));
+                        }
+                    }
+                }
+            }
+            return gameStates;
+        } else
+        {
+
+        }
         return null;
     }
 
-    private Player getCurrentlyMovingPlayer()
+    private GameState GetGameState(Board board)
+    {
+        int firstPlayersPawns = board.GetPlayerFields(PlayerNumber.FirstPlayer).Count;
+        int secondPlayerPawns = board.GetPlayerFields(PlayerNumber.SecondPlayer).Count;
+        PlayerNumber winningPlayer;
+        if(firstPlayersPawns <= LOSING_PAWNS_NUMBER_THRESHOLD)
+        {
+            winningPlayer = PlayerNumber.SecondPlayer;
+        } else if (secondPlayerPawns <= LOSING_PAWNS_NUMBER_THRESHOLD)
+        {
+            winningPlayer = PlayerNumber.FirstPlayer;
+        } else
+        {
+            winningPlayer = PlayerNumber.None;
+        }
+        return new GameState(board, firstPlayersPawns, secondPlayerPawns, winningPlayer);
+    }
+
+    public MillDifference GetMillDifference(HashSet<Mill> previousMills, Board board)
+    {
+        HashSet<Mill> activeMills = GetActiveMills(board);
+        HashSet<Mill> newActiveMills = new HashSet<Mill>(activeMills);
+        newActiveMills.ExceptWith(previousMills);
+        return new MillDifference(activeMills, newActiveMills);
+    }
+
+    public GameState GetCurrentGameState()
+    {
+        return new GameState(currentBoard, firstPlayer.PawnsLeft, secondPlayer.PawnsLeft, _winningPlayerNumber);
+    }
+
+    private PlayerData getCurrentlyMovingPlayer()
     {
         if(CurrentMovingPlayerNumber == PlayerNumber.FirstPlayer) {
             return firstPlayer;
@@ -279,7 +429,7 @@ public class GameEngine
         return secondPlayer;
     }
 
-    private Player getOtherPlayer()
+    private PlayerData getOtherPlayer()
     {
         if (CurrentMovingPlayerNumber == PlayerNumber.FirstPlayer)
         {

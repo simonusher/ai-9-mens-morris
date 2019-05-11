@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player
+public class PlayerData
 {
     public static int FIELD_UNSELECTED = -1;
     public static int FLYING_PAWNS_NUMBER = 3;
     public PlayerNumber PlayerNumber { get; private set; }
     public int PawnsToSet { get; private set; }
-    public int PawnsLeft { get; private set; }
-    public int SelectedFieldIndex { get; private set; }
+    public int PawnsLeft { get;  set; }
 
     public bool Flying {
         get
@@ -18,12 +17,11 @@ public class Player
         }
     }
 
-    public Player(PlayerNumber playerNumber, int pawnsToSet)
+    public PlayerData(PlayerNumber playerNumber, int pawnsToSet)
     {
         this.PlayerNumber = playerNumber;
         PawnsToSet = pawnsToSet;
         PawnsLeft = 0;
-        SelectedFieldIndex = FIELD_UNSELECTED;
     }
 
     public void SetPawn()
@@ -38,16 +36,6 @@ public class Player
     public void RemovePawn()
     {
         PawnsLeft--;
-    }
-
-    public void SelectPawn(int fieldIndex)
-    {
-        SelectedFieldIndex = fieldIndex;
-    }
-
-    public void DeselectField()
-    {
-        SelectedFieldIndex = FIELD_UNSELECTED;
     }
 
     public bool HasPawnsLeft()

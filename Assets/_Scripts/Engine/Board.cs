@@ -36,4 +36,21 @@ public class Board
         return fields[index];
     }
 
+    public List<Field> GetPlayerFields(PlayerNumber playerNumber)
+    {
+        List<Field> playerFields = new List<Field>();
+        foreach(var field in fields)
+        {
+            if(field.PawnPlayerNumber == playerNumber)
+            {
+                playerFields.Add(field);
+            }
+        }
+        return playerFields;
+    }
+
+    public List<Field> GetEmptyFields()
+    {
+        return GetPlayerFields(PlayerNumber.None);
+    }
 }
