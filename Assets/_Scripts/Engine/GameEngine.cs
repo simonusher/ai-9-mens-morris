@@ -33,7 +33,7 @@ public class GameEngine
     private Player secondPlayer;
     private PlayerNumber currentMovingPlayerNumber;
 
-    private int selectedFieldIndex;
+    private Field lastSelectedField;
 
     
     private int pawnsToRemove;
@@ -49,7 +49,7 @@ public class GameEngine
         millGameStage = MillGameStage.PlacingPawns;
         gameFinished = false;
         pawnsToRemove = 0;
-        selectedFieldIndex = Field.FIELD_INDEX_UNSET;
+        lastSelectedField = null;
         lastTurnActiveMills = new HashSet<Mill>();
     }
 
@@ -70,7 +70,7 @@ public class GameEngine
             HandlePawnPlacing(fieldIndex);
         } else
         {
-
+            HandlePawnMoving(fieldIndex);
         }
         CheckGameStateChange();
     }
@@ -93,6 +93,7 @@ public class GameEngine
         getOtherPlayer().RemovePawn();
         NotifyBoardChanged();
         pawnsToRemove--;
+        lastTurnActiveMills = GetActiveMills(currentBoard);
         if(pawnsToRemove == 0)
         {
             SwitchPlayer();
@@ -105,25 +106,80 @@ public class GameEngine
         {
             currentBoard.GetField(fieldIndex).PawnPlayerNumber = currentMovingPlayerNumber;
             getCurrentlyMovingPlayer().SetPawn();
-            HashSet<Mill> activeMills = GetActiveMills(currentBoard);
-            HashSet<Mill> newActiveMills = new HashSet<Mill>(activeMills);
-            newActiveMills.ExceptWith(lastTurnActiveMills);
-            if (newActiveMills.Count > 0)
-            {
-                pawnsToRemove = newActiveMills.Count;
-                lastTurnActiveMills = activeMills;
-            }
-            else
-            {
-                SwitchPlayer();
-            }
+            TogglePawnDeletingOrSwitchPlayer();
             NotifyBoardChanged();
+        }
+    }
+
+    private void TogglePawnDeletingOrSwitchPlayer()
+    {
+        HashSet<Mill> activeMills = GetActiveMills(currentBoard);
+        HashSet<Mill> newActiveMills = new HashSet<Mill>(activeMills);
+        newActiveMills.ExceptWith(lastTurnActiveMills);
+        if (newActiveMills.Count > 0)
+        {
+            pawnsToRemove = newActiveMills.Count;
+            lastTurnActiveMills = activeMills;
+        }
+        else
+        {
+            SwitchPlayer();
         }
     }
 
     private void HandlePawnMoving(int fieldIndex)
     {
-        //TODO
+        Player currentPlayer = getCurrentlyMovingPlayer();
+        Field newField = currentBoard.GetField(fieldIndex);
+        PlayerNumber selectedFieldPawnPlayer = newField.PawnPlayerNumber;
+        if (selectedFieldPawnPlayer == currentPlayer.PlayerNumber)
+        {
+            lastSelectedField = newField;
+        }
+        else if(lastSelectedField != null && selectedFieldPawnPlayer == PlayerNumber.None)
+        {
+            if (currentPlayer.Flying)
+            {
+                HandleFlying(newField);
+            } else
+            {
+                HandleNormalMove(newField);
+            }
+        }
+    }
+
+    private void HandleNormalMove(Field newField)
+    {
+        List<Field> possibleNewFields = GetPossibleNewFields(lastSelectedField.FieldIndex, currentBoard);
+        if(possibleNewFields.Contains(newField) && lastSelectedField.CanMoveTo(newField))
+        {
+            PerformSelectedMove(newField);
+        }
+    }
+
+    private List<Field> GetPossibleNewFields(int fromIndex, Board board)
+    {
+        List<Field> possibleFields = new List<Field>();
+        foreach (int index in possibleMoveIndices[fromIndex])
+        {
+            possibleFields.Add(board.GetField(index));
+        }
+        return possibleFields;
+    }
+
+    private void HandleFlying(Field newField)
+    {
+        if (lastSelectedField.CanMoveTo(newField))
+        {
+            PerformSelectedMove(newField);
+        }
+    }
+
+    private void PerformSelectedMove(Field newField)
+    {
+        lastSelectedField.MoveTo(newField);
+        NotifyBoardChanged();
+        TogglePawnDeletingOrSwitchPlayer();
     }
 
     private void CheckGameStateChange()
@@ -151,7 +207,7 @@ public class GameEngine
         {
             currentMovingPlayerNumber = PlayerNumber.FirstPlayer;
         }
-        selectedFieldIndex = Field.FIELD_INDEX_UNSET;
+        lastSelectedField = null;
     }
 
     public void MakeMove(Board board)

@@ -18,7 +18,7 @@ public class Board
         this.fields = new List<Field>(DEFAULT_NUMBER_OF_FIELDS);
         for(int i = 0; i < DEFAULT_NUMBER_OF_FIELDS; i++)
         {
-            this.fields.Add(new Field());
+            this.fields.Add(new Field(i));
         }
     }
 
