@@ -20,6 +20,8 @@ public class GameUIController : MonoBehaviour
 
     [SerializeField] private string numberOfMovesTemplateText = "Moves: {0}";
     [SerializeField] private string timerTemplateText = "Time[s]: {0}";
+    [SerializeField] private string currentMovingPlayerTemplateText = "Turn: Player {0}";
+    [SerializeField] private TextMeshProUGUI currentMovingPlayerText;
 
     [SerializeField] private Button playButton;
     [SerializeField] private Toggle logToFileToggle;
@@ -81,6 +83,7 @@ public class GameUIController : MonoBehaviour
         OnBoardUpdated(gameEngine.currentBoard);
         gameEngine.OnBoardChanged += OnBoardUpdated;
         gameEngine.OnGameFinished += OnGameFinished;
+        gameEngine.OnPlayerTurnChanged += OnPlayerTurnChanged;
         playButton.interactable = false;
     }
 
@@ -104,11 +107,28 @@ public class GameUIController : MonoBehaviour
         }
     }
 
+    private void OnPlayerTurnChanged(PlayerNumber currentMovingPlayerNumber)
+    {
+        if(currentMovingPlayerNumber == PlayerNumber.FirstPlayer)
+        {
+            UpdateTurnText(1);
+        } else
+        {
+            UpdateTurnText(2);
+        }
+    }
+
+    private void UpdateTurnText(int playerNumber)
+    {
+        currentMovingPlayerText.text = string.Format(currentMovingPlayerTemplateText, playerNumber);
+    }
+
     private void OnGameFinished(PlayerNumber winningPlayer)
     {
         Debug.Log(string.Format("Player {0} won!", winningPlayer));
         gameEngine.OnBoardChanged -= OnBoardUpdated;
         gameEngine.OnGameFinished -= OnGameFinished;
+        gameEngine.OnPlayerTurnChanged -= OnPlayerTurnChanged;
         gameEngine = null;
     }
 

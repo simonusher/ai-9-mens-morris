@@ -18,6 +18,13 @@ public class GameEngine
     private static int LOSING_PAWNS_NUMBER_THRESHOLD = 2;
 
     public delegate void GameFinished(PlayerNumber winningPlayerNumber);
+    public event GameFinished OnGameFinished = delegate { };
+
+    public delegate void BoardChanged(Board newBoard);
+    public event BoardChanged OnBoardChanged = delegate { };
+
+    public delegate void PlayerTurnChanged(PlayerNumber currentMovingPlayerNumber);
+    public event PlayerTurnChanged OnPlayerTurnChanged = delegate { };
 
     private PlayerNumber _winningPlayerNumber;
     public PlayerNumber WinningPlayerNumber {
@@ -31,10 +38,6 @@ public class GameEngine
             OnGameFinished(_winningPlayerNumber);
         }
     }
-    public event GameFinished OnGameFinished = delegate { };
-
-    public delegate void BoardChanged(Board newBoard);
-    public event BoardChanged OnBoardChanged = delegate { };
 
     private bool shouldLogToFile;
     private Mill[] mills;
@@ -48,7 +51,21 @@ public class GameEngine
 
     private Player firstPlayer;
     private Player secondPlayer;
-    private PlayerNumber currentMovingPlayerNumber;
+
+    private PlayerNumber _currentMovingPlayerNumber;
+    public PlayerNumber CurrentMovingPlayerNumber
+    {
+        get
+        {
+            return _currentMovingPlayerNumber;
+        }
+        private set
+        {
+            _currentMovingPlayerNumber = value;
+            OnPlayerTurnChanged(_currentMovingPlayerNumber);
+        }
+    }
+
 
     private Field lastSelectedField;
 
@@ -97,7 +114,7 @@ public class GameEngine
         Field field = currentBoard.GetField(fieldIndex);
         if(field.PawnPlayerNumber != PlayerNumber.None)
         {
-            if(field.PawnPlayerNumber != currentMovingPlayerNumber)
+            if(field.PawnPlayerNumber != CurrentMovingPlayerNumber)
             {
                 RemovePawn(field);
             }
@@ -121,7 +138,7 @@ public class GameEngine
     {
         if (currentBoard.GetField(fieldIndex).PawnPlayerNumber == PlayerNumber.None)
         {
-            currentBoard.GetField(fieldIndex).PawnPlayerNumber = currentMovingPlayerNumber;
+            currentBoard.GetField(fieldIndex).PawnPlayerNumber = CurrentMovingPlayerNumber;
             getCurrentlyMovingPlayer().SetPawn();
             TogglePawnDeletingOrSwitchPlayer();
             NotifyBoardChanged();
@@ -228,12 +245,12 @@ public class GameEngine
 
     private void SwitchPlayer()
     {
-        if(currentMovingPlayerNumber == PlayerNumber.FirstPlayer)
+        if(CurrentMovingPlayerNumber == PlayerNumber.FirstPlayer)
         {
-            currentMovingPlayerNumber = PlayerNumber.SecondPlayer;
+            CurrentMovingPlayerNumber = PlayerNumber.SecondPlayer;
         } else
         {
-            currentMovingPlayerNumber = PlayerNumber.FirstPlayer;
+            CurrentMovingPlayerNumber = PlayerNumber.FirstPlayer;
         }
         lastSelectedField = null;
     }
@@ -256,7 +273,7 @@ public class GameEngine
 
     private Player getCurrentlyMovingPlayer()
     {
-        if(currentMovingPlayerNumber == PlayerNumber.FirstPlayer) {
+        if(CurrentMovingPlayerNumber == PlayerNumber.FirstPlayer) {
             return firstPlayer;
         }
         return secondPlayer;
@@ -264,7 +281,7 @@ public class GameEngine
 
     private Player getOtherPlayer()
     {
-        if (currentMovingPlayerNumber == PlayerNumber.FirstPlayer)
+        if (CurrentMovingPlayerNumber == PlayerNumber.FirstPlayer)
         {
             return secondPlayer;
         }
