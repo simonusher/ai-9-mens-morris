@@ -15,19 +15,36 @@ public class GameEngine
 {
     private static int POSSIBLE_MILLS = 16;
     private static int PLAYERS_PAWNS = 9;
+    private static int LOSING_PAWNS_NUMBER_THRESHOLD = 2;
+
+    public delegate void GameFinished(PlayerNumber winningPlayerNumber);
+
+    private PlayerNumber _winningPlayerNumber;
+    public PlayerNumber WinningPlayerNumber {
+        get
+        {
+            return _winningPlayerNumber;
+        }
+        private set
+        {
+            _winningPlayerNumber = value;
+            OnGameFinished(_winningPlayerNumber);
+        }
+    }
+    public event GameFinished OnGameFinished = delegate { };
+
+    public delegate void BoardChanged(Board newBoard);
+    public event BoardChanged OnBoardChanged = delegate { };
+
+    private bool shouldLogToFile;
     private Mill[] mills;
     private List<List<int>> possibleMoveIndices;
     private string[] fieldNames;
 
-    private bool shouldLogToFile;
     public Board currentBoard { get; private set; }
 
     private MillGameStage millGameStage;
-
-    private bool gameFinished;
-
-    public delegate void BoardChanged(Board newBoard);
-    public event BoardChanged OnBoardChanged = delegate { };
+    
 
     private Player firstPlayer;
     private Player secondPlayer;
@@ -47,10 +64,10 @@ public class GameEngine
         InitializeBoard();
         InitializePlayers();
         millGameStage = MillGameStage.PlacingPawns;
-        gameFinished = false;
         pawnsToRemove = 0;
         lastSelectedField = null;
         lastTurnActiveMills = new HashSet<Mill>();
+        _winningPlayerNumber = PlayerNumber.None;
     }
 
     private void InitializePlayers()
@@ -189,6 +206,17 @@ public class GameEngine
             if(!firstPlayer.HasPawnsToSet() && !secondPlayer.HasPawnsToSet())
             {
                 millGameStage = MillGameStage.NormalPlay;
+            }
+        }
+        else
+        {
+            if(firstPlayer.PawnsLeft <= LOSING_PAWNS_NUMBER_THRESHOLD)
+            {
+                OnGameFinished(PlayerNumber.SecondPlayer);
+            }
+            else if(secondPlayer.PawnsLeft <= LOSING_PAWNS_NUMBER_THRESHOLD)
+            {
+                OnGameFinished(PlayerNumber.FirstPlayer);
             }
         }
     }

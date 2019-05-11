@@ -7,9 +7,11 @@ using System;
 
 public class GameUIController : MonoBehaviour
 {
-    [SerializeField] private TMP_Dropdown gameTypeDropdown;
+    [SerializeField] private TMP_Dropdown firstPlayerTypeDropdown;
     [SerializeField] private TMP_Dropdown firstPlayerAlgorithmDropdown;
     [SerializeField] private TMP_Dropdown firstPlayerHeuristicDropdown;
+
+    [SerializeField] private TMP_Dropdown secondPlayerTypeDropdown;
     [SerializeField] private TMP_Dropdown secondPlayerAlgorithmDropdown;
     [SerializeField] private TMP_Dropdown secondPlayerHeuristicDropdown;
 
@@ -33,9 +35,11 @@ public class GameUIController : MonoBehaviour
 
     private GameEngine gameEngine = null;
 
+
     private void Awake()
     {
-        gameTypeDropdown.onValueChanged.AddListener(gameType => SetAIDropdownsActive(gameType));
+        firstPlayerTypeDropdown.onValueChanged.AddListener(gameType => SetAIDropdownsActive(gameType, PlayerNumber.FirstPlayer));
+        secondPlayerTypeDropdown.onValueChanged.AddListener(gameType => SetAIDropdownsActive(gameType, PlayerNumber.SecondPlayer));
         InitPawnButtonHandlers();
         playButton.onClick.AddListener(StartGame);
     }
@@ -49,17 +53,24 @@ public class GameUIController : MonoBehaviour
         }
     }
 
-    private void SetAIDropdownsActive(int gameType)
+    private void SetAIDropdownsActive(int playerType, PlayerNumber playerNumber)
     {
-        if(gameType == 0)
+        TMP_Dropdown algorithmDropdown = firstPlayerAlgorithmDropdown;
+        TMP_Dropdown heuristicDropdown = firstPlayerHeuristicDropdown;
+        if(playerNumber == PlayerNumber.SecondPlayer)
         {
-            firstPlayerAlgorithmDropdown.interactable = false;
-            firstPlayerHeuristicDropdown.interactable = false;
+            algorithmDropdown = secondPlayerAlgorithmDropdown;
+            heuristicDropdown = secondPlayerHeuristicDropdown;
+        }
+        if (playerType == 0)
+        {
+            algorithmDropdown.interactable = false;
+            heuristicDropdown.interactable = false;
         }
         else
         {
-            firstPlayerAlgorithmDropdown.interactable = true;
-            firstPlayerHeuristicDropdown.interactable = true;
+            algorithmDropdown.interactable = true;
+            heuristicDropdown.interactable = true;
         }
     }
 
@@ -69,9 +80,11 @@ public class GameUIController : MonoBehaviour
         gameEngine = new GameEngine(false);
         OnBoardUpdated(gameEngine.currentBoard);
         gameEngine.OnBoardChanged += OnBoardUpdated;
+        gameEngine.OnGameFinished += OnGameFinished;
+        playButton.interactable = false;
     }
 
-    void OnBoardUpdated(Board newBoard)
+    private void OnBoardUpdated(Board newBoard)
     {
         for(int i = 0; i < pawnButtons.Length; i++)
         {
@@ -91,12 +104,25 @@ public class GameUIController : MonoBehaviour
         }
     }
 
-    void HandleButtonClick(int fieldIndex)
+    private void OnGameFinished(PlayerNumber winningPlayer)
+    {
+        Debug.Log(string.Format("Player {0} won!", winningPlayer));
+        gameEngine.OnBoardChanged -= OnBoardUpdated;
+        gameEngine.OnGameFinished -= OnGameFinished;
+        gameEngine = null;
+    }
+
+    private void HandleButtonClick(int fieldIndex)
     {
         if(gameEngine != null)
         {
             Debug.Log(fieldIndex);
             gameEngine.HandleSelection(fieldIndex);
         }
+    }
+
+    private void SetUiActive(bool active)
+    {
+
     }
 }
