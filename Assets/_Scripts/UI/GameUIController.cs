@@ -84,15 +84,15 @@ public class GameUIController : MonoBehaviour
     void StartGame()
     {
         gameEngine = new GameEngine(false);
-        //AiPlayer aiPlayer = new RandomAiPlayer(PlayerNumber.SecondPlayer, gameEngine);
-        //playersController = new PlayersController(secondAiPlayer: aiPlayer);
+        AiPlayer aiPlayer = new RandomAiPlayer(PlayerNumber.SecondPlayer, gameEngine);
+        playersController = new PlayersController(secondAiPlayer: aiPlayer);
         OnBoardUpdated(gameEngine.currentBoard);
         gameEngine.OnBoardChanged += OnBoardUpdated;
         gameEngine.OnGameFinished += OnGameFinished;
         gameEngine.OnPlayerTurnChanged += OnPlayerTurnChanged;
-        //gameEngine.OnPlayerTurnChanged += playersController.OnPlayerTurnChanged;
+        gameEngine.OnPlayerTurnChanged += playersController.OnPlayerTurnChanged;
         playButton.interactable = false;
-        //playersController.StartGame();
+        playersController.StartGame();
     }
 
     private void OnBoardUpdated(Board newBoard)

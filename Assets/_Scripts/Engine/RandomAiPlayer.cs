@@ -17,7 +17,7 @@ public class RandomAiPlayer : AiPlayer
 
     public void MakeMove()
     {
-        List<GameState> possibleMoves = gameEngine.GetPossibleMoves(myPlayerNumber, gameEngine.currentBoard);
+        List<GameState> possibleMoves = gameEngine.GetAllPossibleNextStates(myPlayerNumber, gameEngine.currentBoard);
         int numberOfPossibleMoves = possibleMoves.Count;
         if(numberOfPossibleMoves == 0)
         {
