@@ -37,7 +37,7 @@ public class GameEngine
 
     
     private int pawnsToRemove;
-    private int lastTurnMills;
+    private HashSet<Mill> lastTurnActiveMills;
 
     public GameEngine(bool shouldLogToFile)
     {
@@ -49,8 +49,8 @@ public class GameEngine
         millGameStage = MillGameStage.PlacingPawns;
         gameFinished = false;
         pawnsToRemove = 0;
-        lastTurnMills = 0;
         selectedFieldIndex = Field.FIELD_INDEX_UNSET;
+        lastTurnActiveMills = new HashSet<Mill>();
     }
 
     private void InitializePlayers()
@@ -105,11 +105,13 @@ public class GameEngine
         {
             currentBoard.GetField(fieldIndex).PawnPlayerNumber = currentMovingPlayerNumber;
             getCurrentlyMovingPlayer().SetPawn();
-            int millsNumber = CountMills(currentBoard);
-            if (millsNumber > lastTurnMills)
+            HashSet<Mill> activeMills = GetActiveMills(currentBoard);
+            HashSet<Mill> newActiveMills = new HashSet<Mill>(activeMills);
+            newActiveMills.ExceptWith(lastTurnActiveMills);
+            if (newActiveMills.Count > 0)
             {
-                pawnsToRemove = millsNumber - lastTurnMills;
-                lastTurnMills = millsNumber;
+                pawnsToRemove = newActiveMills.Count;
+                lastTurnActiveMills = activeMills;
             }
             else
             {
@@ -149,6 +151,7 @@ public class GameEngine
         {
             currentMovingPlayerNumber = PlayerNumber.FirstPlayer;
         }
+        selectedFieldIndex = Field.FIELD_INDEX_UNSET;
     }
 
     public void MakeMove(Board board)
@@ -265,10 +268,11 @@ public class GameEngine
         fieldNames[23] = "G7";
     }
 
-    private int CountMills(Board board)
+    private HashSet<Mill> GetActiveMills(Board board)
     {
-        int boardMills = 0;
+        HashSet<Mill> activeMills = new HashSet<Mill>();
         Mill mill;
+
         for (int i = 0; i < mills.Length; i++)
         {
             mill = mills[i];
@@ -286,11 +290,11 @@ public class GameEngine
 
                 if (millPossible)
                 {
-                    boardMills++;
+                    activeMills.Add(mill);
                 }
             }
         }
 
-        return boardMills;
+        return activeMills;
     }
 }

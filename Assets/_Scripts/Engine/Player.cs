@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player
 {
     public static int FIELD_UNSELECTED = -1;
+    public static int FLYING_PAWNS_NUMBER = 3;
     public PlayerNumber playerNumber { get; private set; }
     public int PawnsToSet { get; private set; }
     public int PawnsLeft { get; private set; }
@@ -50,5 +51,10 @@ public class Player
     public bool HasPawnsToSet()
     {
         return PawnsToSet != 0;
+    }
+
+    public bool IsFlying()
+    {
+        return PawnsLeft <= FLYING_PAWNS_NUMBER;
     }
 }

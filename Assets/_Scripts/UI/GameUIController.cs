@@ -26,6 +26,10 @@ public class GameUIController : MonoBehaviour
 
     [SerializeField] private Sprite firstPlayerPawnImage;
     [SerializeField] private Sprite secondPlayerPawnImage;
+    [SerializeField] private Sprite emptyField;
+
+    private Color emptyColor = new Color(255, 255, 255, 0);
+    private Color nonEmptyColor = new Color(255, 255, 255, 255);
 
     private GameEngine gameEngine = null;
 
@@ -75,12 +79,14 @@ public class GameUIController : MonoBehaviour
             if(field.PawnPlayerNumber == PlayerNumber.FirstPlayer)
             {
                 pawnButtons[i].image.sprite = firstPlayerPawnImage;
+                pawnButtons[i].image.color = nonEmptyColor;
             } else if (field.PawnPlayerNumber == PlayerNumber.SecondPlayer)
             {
                 pawnButtons[i].image.sprite = secondPlayerPawnImage;
+                pawnButtons[i].image.color = nonEmptyColor;
             } else
             {
-                pawnButtons[i].image.sprite = null;
+                pawnButtons[i].image.color = emptyColor;
             }
         }
     }
