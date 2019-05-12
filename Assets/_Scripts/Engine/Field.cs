@@ -16,6 +16,12 @@ public class Field
     public PlayerNumber PawnPlayerNumber { get; set; }
     public int FieldIndex { get; private set; }
     public int LastFieldIndex { get; set; }
+    public bool Empty {
+        get
+        {
+            return this.PawnPlayerNumber == PlayerNumber.None;
+        }
+    }
 
     public Field(int fieldIndex)
     {
@@ -46,5 +52,10 @@ public class Field
     public bool CanMoveTo(Field other)
     {
         return (LastFieldIndex == FIELD_INDEX_UNSET || LastFieldIndex != other.FieldIndex) && other.PawnPlayerNumber == PlayerNumber.None;
+    }
+
+    public bool BelongsTo(PlayerNumber player)
+    {
+        return PawnPlayerNumber == player;
     }
 }

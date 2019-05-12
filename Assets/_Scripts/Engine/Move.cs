@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Move
 {
-    public Field fromField { get; }
-    public Field toField { get; }
+    public int FromFieldIndex { get; }
+    public int ToFieldIndex { get; }
 
-    public Move(Field fromField, Field toField)
+    public Move(int fromFieldIndex, int toFieldIndex)
     {
-        this.fromField = fromField;
-        this.toField = toField;
+        this.FromFieldIndex = fromFieldIndex;
+        this.ToFieldIndex = toFieldIndex;
     }
 }

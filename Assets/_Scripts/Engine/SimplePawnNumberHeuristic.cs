@@ -8,14 +8,16 @@ public class SimplePawnNumberHeuristic : Heuristic
 
     public double Evaluate(GameState gameState)
     {
-        //PlayerNumber winningPlayer = gameState.WinningPlayer;
-        double evaluation = gameState.FirstPlayerPawns - gameState.SecondPlayerPawns;
-        //if (winningPlayer == PlayerNumber.FirstPlayer) {
-        //    evaluation += DEFAULT_WINNING_WEIGHT;
-        //} else if(winningPlayer == PlayerNumber.SecondPlayer)
-        //{
-        //    evaluation -= DEFAULT_WINNING_WEIGHT;
-        //}
+        PlayerNumber winningPlayer = gameState.WinningPlayer;
+        double evaluation = gameState.FirstPlayersPawnsLeft - gameState.SecondPlayersPawnsLeft;
+        if (winningPlayer == PlayerNumber.FirstPlayer)
+        {
+            evaluation += DEFAULT_WINNING_WEIGHT;
+        }
+        else if (winningPlayer == PlayerNumber.SecondPlayer)
+        {
+            evaluation -= DEFAULT_WINNING_WEIGHT;
+        }
         return evaluation;
     }
 }

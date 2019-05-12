@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System;
+﻿using System.Collections.Generic;
 
 public class GameTreeNode {
     public GameState GameState;
@@ -32,7 +30,7 @@ public class MinMaxAiPlayer : AiPlayer
     public void MakeMove()
     {
         GameTreeNode bestPossibleMove = null;
-        GameState currentState = game.GetCurrentGameState();
+        GameState currentState = game.GameState;
         if(playerNumber == PlayerNumber.FirstPlayer)
         {
             bestPossibleMove = MinMax(currentState, searchDepth, true);
@@ -46,9 +44,8 @@ public class MinMaxAiPlayer : AiPlayer
 
     private GameTreeNode MinMax(GameState currentState, int depth, bool maximizingPlayer)
     {
-        //if(depth == 0 || currentState.WinningPlayer != PlayerNumber.None)
         GameTreeNode bestMove = null;
-        if(depth == 0)
+        if (depth == 0 || currentState.WinningPlayer != PlayerNumber.None)
         {
             double evaluation = heuristic.Evaluate(currentState);
             bestMove = new GameTreeNode(currentState, evaluation);
@@ -57,7 +54,7 @@ public class MinMaxAiPlayer : AiPlayer
         else if (maximizingPlayer)
         {
             double maxEval = double.NegativeInfinity;
-            List<GameState> nextStates = game.GetAllPossibleNextStates(PlayerNumber.FirstPlayer, currentState);
+            List<GameState> nextStates = currentState.GetAllPossibleNextStates(PlayerNumber.FirstPlayer);
             foreach (var nextState in nextStates)
             {
                 GameTreeNode bestChild = MinMax(nextState, depth - 1, false);
@@ -72,7 +69,7 @@ public class MinMaxAiPlayer : AiPlayer
         else
         {
             double minEval = double.PositiveInfinity;
-            List<GameState> nextStates = game.GetAllPossibleNextStates(PlayerNumber.SecondPlayer, currentState);
+            List<GameState> nextStates = currentState.GetAllPossibleNextStates(PlayerNumber.SecondPlayer);
             foreach (var nextState in nextStates)
             {
                 GameTreeNode bestChild = MinMax(nextState, depth - 1, true);
