@@ -85,7 +85,11 @@ public class GameUIController : MonoBehaviour
     {
         gameEngine = new GameEngine(false);
         //AiPlayer aiPlayer = new RandomAiPlayer(PlayerNumber.FirstPlayer, gameEngine);
-        AiPlayer aiPlayer2 = new RandomAiPlayer(PlayerNumber.SecondPlayer, gameEngine);
+        //AiPlayer aiPlayer2 = new RandomAiPlayer(PlayerNumber.SecondPlayer, gameEngine);
+        Heuristic h1 = new SimplePawnNumberHeuristic();
+        //AiPlayer aiPlayer = new RandomAiPlayer(PlayerNumber.FirstPlayer, gameEngine);
+        //AiPlayer aiPlayer = new MinMaxAiPlayer(gameEngine, h1, PlayerNumber.FirstPlayer, 1);
+        AiPlayer aiPlayer2 = new MinMaxAiPlayer(gameEngine, h1, PlayerNumber.SecondPlayer, 1);
         //playersController = new PlayersController(aiPlayer, aiPlayer2);
         playersController = new PlayersController(secondAiPlayer: aiPlayer2);
         OnBoardUpdated(gameEngine.currentBoard);

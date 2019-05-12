@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface Heuristic
 {
-    double Rate(GameState gameState, PlayerNumber playerNumber);
+    double Evaluate(GameState gameState);
 }

@@ -340,8 +340,9 @@ public class GameEngine
         currentBoard = new Board();
     }
 
-    public List<GameState> GetAllPossibleNextStates(PlayerNumber playerNumber, Board previousBoard)
+    public List<GameState> GetAllPossibleNextStates(PlayerNumber playerNumber, GameState previousState)
     {
+        Board previousBoard = previousState.Board;
         HashSet<Mill> previousActiveMills = GetActiveMills(previousBoard);
         PlayerNumber otherPlayerNumber = playerNumber == PlayerNumber.FirstPlayer ? PlayerNumber.SecondPlayer : PlayerNumber.FirstPlayer;
         List<GameState> gameStates = new List<GameState>();
