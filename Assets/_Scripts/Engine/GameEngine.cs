@@ -292,15 +292,10 @@ public class GameEngine
 
     private void CheckGameFinished(Board board)
     {
-        int firstPlayerPawnsLeft = board.GetPlayerFields(PlayerNumber.FirstPlayer).Count;
-        int secondPlayerPawnsLeft = board.GetPlayerFields(PlayerNumber.SecondPlayer).Count;
-        if (firstPlayerPawnsLeft <= LOSING_PAWNS_NUMBER_THRESHOLD)
+        PlayerNumber winningPlayer = GetWinningPlayer(board);
+        if(winningPlayer != PlayerNumber.None)
         {
-            OnGameFinished(PlayerNumber.SecondPlayer);
-        }
-        else if (secondPlayerPawnsLeft <= LOSING_PAWNS_NUMBER_THRESHOLD)
-        {
-            OnGameFinished(PlayerNumber.FirstPlayer);
+            OnGameFinished(winningPlayer);
         }
     }
 
@@ -331,12 +326,13 @@ public class GameEngine
             }
             currentBoard = gameState.Board;
             lastTurnActiveMills = GetActiveMills(currentBoard);
-            CheckGameStateChange();
             SwitchPlayer();
-        } else
-        {
-            WinningPlayerNumber = getOtherPlayer().PlayerNumber;
         }
+        CheckGameStateChange();
+        //else
+        //{
+        //    WinningPlayerNumber = getOtherPlayer().PlayerNumber;
+        //}
     }
 
     private void InitializeBoard()

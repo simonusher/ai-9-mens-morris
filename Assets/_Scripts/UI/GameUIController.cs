@@ -84,16 +84,16 @@ public class GameUIController : MonoBehaviour
     void StartGame()
     {
         gameEngine = new GameEngine(false);
-        AiPlayer aiPlayer = new RandomAiPlayer(PlayerNumber.FirstPlayer, gameEngine);
+        //AiPlayer aiPlayer = new RandomAiPlayer(PlayerNumber.FirstPlayer, gameEngine);
         AiPlayer aiPlayer2 = new RandomAiPlayer(PlayerNumber.SecondPlayer, gameEngine);
-        playersController = new PlayersController(aiPlayer, aiPlayer2);
+        //playersController = new PlayersController(aiPlayer, aiPlayer2);
+        playersController = new PlayersController(secondAiPlayer: aiPlayer2);
         OnBoardUpdated(gameEngine.currentBoard);
         gameEngine.OnBoardChanged += OnBoardUpdated;
         gameEngine.OnGameFinished += OnGameFinished;
         gameEngine.OnPlayerTurnChanged += OnPlayerTurnChanged;
         gameEngine.OnPlayerTurnChanged += playersController.OnPlayerTurnChanged;
         playButton.interactable = false;
-        playersController.StartGame();
     }
 
     private void OnBoardUpdated(Board newBoard)
@@ -154,5 +154,14 @@ public class GameUIController : MonoBehaviour
     private void SetUiActive(bool active)
     {
 
+    }
+
+
+    private void Update()
+    {
+        if(playersController != null)
+        {
+            playersController.CheckStep();
+        }
     }
 }
