@@ -10,7 +10,7 @@ public enum MillGameStage
 public class GameState
 {
     private static int N_POSSIBLE_MILLS = 16;
-    private static int PLAYERS_PAWNS = 4;
+    private static int PLAYERS_PAWNS = 9;
     private static int LOSING_PAWNS_NUMBER_THRESHOLD = 2;
     private static int FLYING_PAWNS_NUMBER = 3;
     private static Mill[] POSSIBLE_MILLS;
@@ -273,7 +273,7 @@ public class GameState
         }
         else
         {
-            if(PawnsToRemove == 0)
+            if(PawnsToRemove <= 0)
             {
 
                 int firstPlayersPossibleMoves = GetAllPossibleMoves(PlayerNumber.FirstPlayer, CurrentBoard).Count;
