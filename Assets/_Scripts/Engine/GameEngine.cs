@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class GameEngine
 {
@@ -39,6 +40,7 @@ public class GameEngine
 
     private void OnGameStateChanged()
     {
+        Debug.Log(GameState.WinningPlayer);
         OnBoardChanged(GameState.CurrentBoard);
         if (GameState.WinningPlayer != PlayerNumber.None)
         {

@@ -7,30 +7,39 @@ using System;
 
 public class GameUIController : MonoBehaviour
 {
-    [SerializeField] private TMP_Dropdown firstPlayerTypeDropdown;
-    [SerializeField] private TMP_Dropdown firstPlayerAlgorithmDropdown;
-    [SerializeField] private TMP_Dropdown firstPlayerHeuristicDropdown;
+    private static readonly int HUMAN_DROPDOWN_NUMBER = 0;
+    private static readonly int AI_DROPDOWN_NUMBER = 1;
+    private static readonly int MIN_MAX_DROPDOWN_NUMBER = 0;
+    private static readonly int ALPHA_BETA_DROPDOWN_NUMBER = 1;
 
-    [SerializeField] private TMP_Dropdown secondPlayerTypeDropdown;
-    [SerializeField] private TMP_Dropdown secondPlayerAlgorithmDropdown;
-    [SerializeField] private TMP_Dropdown secondPlayerHeuristicDropdown;
+    private static Dictionary<int, Func<Heuristic>> heuristicDictionary;
 
-    [SerializeField] private TextMeshProUGUI numberOfMovesText;
-    [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private TMP_Dropdown firstPlayerTypeDropdown = null;
+    [SerializeField] private TMP_Dropdown firstPlayerAlgorithmDropdown = null;
+    [SerializeField] private TMP_Dropdown firstPlayerHeuristicDropdown = null;
+    [SerializeField] private TMP_Dropdown firstPlayerSearchDepthDropdown = null;
+
+    [SerializeField] private TMP_Dropdown secondPlayerTypeDropdown = null;
+    [SerializeField] private TMP_Dropdown secondPlayerAlgorithmDropdown = null;
+    [SerializeField] private TMP_Dropdown secondPlayerHeuristicDropdown = null;
+    [SerializeField] private TMP_Dropdown secondPlayerSearchDepthDropdown = null;
+
+    [SerializeField] private TextMeshProUGUI numberOfMovesText = null;
+    [SerializeField] private TextMeshProUGUI timerText = null;
 
     [SerializeField] private string numberOfMovesTemplateText = "Moves: {0}";
     [SerializeField] private string timerTemplateText = "Time[s]: {0}";
     [SerializeField] private string currentMovingPlayerTemplateText = "Turn: Player {0}";
-    [SerializeField] private TextMeshProUGUI currentMovingPlayerText;
+    [SerializeField] private TextMeshProUGUI currentMovingPlayerText = null;
 
-    [SerializeField] private Button playButton;
-    [SerializeField] private Toggle logToFileToggle;
+    [SerializeField] private Button playButton = null;
+    [SerializeField] private Toggle logToFileToggle = null;
 
-    [SerializeField] private Button[] pawnButtons;
+    [SerializeField] private Button[] pawnButtons = null;
 
-    [SerializeField] private Sprite firstPlayerPawnImage;
-    [SerializeField] private Sprite secondPlayerPawnImage;
-    [SerializeField] private Sprite emptyField;
+    [SerializeField] private Sprite firstPlayerPawnImage = null;
+    [SerializeField] private Sprite secondPlayerPawnImage = null;
+    [SerializeField] private Sprite emptyField = null;
 
     private Color emptyColor = new Color(255, 255, 255, 0);
     private Color nonEmptyColor = new Color(255, 255, 255, 255);
@@ -39,8 +48,13 @@ public class GameUIController : MonoBehaviour
     private Color secondPlayerColor = new Color(0, 0, 0, 255);
 
     private GameEngine gameEngine = null;
-    private PlayersController playersController = null;
+    private PlayersController aiPlayersController = null;
 
+    static GameUIController()
+    {
+        heuristicDictionary = new Dictionary<int, Func<Heuristic>>();
+        heuristicDictionary[0] = () => new SimplePawnNumberHeuristic();
+    }
 
     private void Awake()
     {
@@ -63,20 +77,24 @@ public class GameUIController : MonoBehaviour
     {
         TMP_Dropdown algorithmDropdown = firstPlayerAlgorithmDropdown;
         TMP_Dropdown heuristicDropdown = firstPlayerHeuristicDropdown;
+        TMP_Dropdown searchDepthDropdown = firstPlayerSearchDepthDropdown;
         if(playerNumber == PlayerNumber.SecondPlayer)
         {
             algorithmDropdown = secondPlayerAlgorithmDropdown;
             heuristicDropdown = secondPlayerHeuristicDropdown;
+            searchDepthDropdown = secondPlayerSearchDepthDropdown;
         }
-        if (playerType == 0)
+        if (playerType == HUMAN_DROPDOWN_NUMBER)
         {
             algorithmDropdown.interactable = false;
             heuristicDropdown.interactable = false;
+            searchDepthDropdown.interactable = false;
         }
         else
         {
             algorithmDropdown.interactable = true;
             heuristicDropdown.interactable = true;
+            searchDepthDropdown.interactable = true;
         }
     }
 
@@ -84,21 +102,49 @@ public class GameUIController : MonoBehaviour
     void StartGame()
     {
         gameEngine = new GameEngine(false);
-        //AiPlayer aiPlayer = new RandomAiPlayer(PlayerNumber.FirstPlayer, gameEngine);
-        //AiPlayer aiPlayer2 = new RandomAiPlayer(PlayerNumber.SecondPlayer, gameEngine);
-        Heuristic h1 = new SimplePawnNumberHeuristic();
-        AiPlayer aiPlayer = new RandomAiPlayer(PlayerNumber.FirstPlayer, gameEngine);
-        //AiPlayer aiPlayer = new MinMaxAiPlayer(gameEngine, h1, PlayerNumber.FirstPlayer, 1);
-        //AiPlayer aiPlayer = new MinMaxAiPlayer(gameEngine, h1, PlayerNumber.FirstPlayer, 1);
-        AiPlayer aiPlayer2 = new AlphaBetaAiPlayer(gameEngine, h1, PlayerNumber.SecondPlayer, 3);
-        playersController = new PlayersController(aiPlayer, aiPlayer2);
-        //playersController = new PlayersController(secondAiPlayer: aiPlayer2);
+        AiPlayer firstPlayer = InitPlayer(PlayerNumber.FirstPlayer);
+        AiPlayer secondPlayer = InitPlayer(PlayerNumber.SecondPlayer);
+        aiPlayersController = new PlayersController(firstPlayer, secondPlayer);
         OnBoardUpdated(gameEngine.GameState.CurrentBoard);
         gameEngine.OnBoardChanged += OnBoardUpdated;
         gameEngine.OnGameFinished += OnGameFinished;
         gameEngine.OnPlayerTurnChanged += OnPlayerTurnChanged;
-        gameEngine.OnPlayerTurnChanged += playersController.OnPlayerTurnChanged;
+        gameEngine.OnPlayerTurnChanged += aiPlayersController.OnPlayerTurnChanged;
         playButton.interactable = false;
+    }
+
+    private AiPlayer InitPlayer(PlayerNumber playerNumber)
+    {
+        TMP_Dropdown playerDropdown;
+        TMP_Dropdown algorithmDropdown;
+        TMP_Dropdown heuristicDropdown;
+        TMP_Dropdown searchDepthDropdown;
+        if (playerNumber == PlayerNumber.FirstPlayer)
+        {
+            playerDropdown = firstPlayerTypeDropdown;
+            algorithmDropdown = firstPlayerAlgorithmDropdown;
+            heuristicDropdown = firstPlayerHeuristicDropdown;
+            searchDepthDropdown = firstPlayerSearchDepthDropdown;
+        } else
+        {
+            playerDropdown = secondPlayerTypeDropdown;
+            algorithmDropdown = secondPlayerAlgorithmDropdown;
+            heuristicDropdown = secondPlayerHeuristicDropdown;
+            searchDepthDropdown = secondPlayerSearchDepthDropdown;
+        }
+        if (playerDropdown.value == AI_DROPDOWN_NUMBER)
+        {
+            Heuristic heuristic = heuristicDictionary[heuristicDropdown.value]();
+            int searchDepth = searchDepthDropdown.value + 1;
+            if(algorithmDropdown.value == MIN_MAX_DROPDOWN_NUMBER)
+            {
+                return new MinMaxAiPlayer(gameEngine, heuristic, playerNumber, searchDepth);
+            } else
+            {
+                return new AlphaBetaAiPlayer(gameEngine, heuristic, playerNumber, searchDepth);
+            }
+        }
+        return null;
     }
 
     private void OnBoardUpdated(Board newBoard)
@@ -151,7 +197,6 @@ public class GameUIController : MonoBehaviour
     {
         if(gameEngine != null)
         {
-            Debug.Log(fieldIndex);
             gameEngine.HandleSelection(fieldIndex);
         }
     }
@@ -164,9 +209,9 @@ public class GameUIController : MonoBehaviour
 
     private void Update()
     {
-        if(playersController != null)
+        if(aiPlayersController != null)
         {
-            playersController.CheckStep();
+            aiPlayersController.CheckStep();
         }
         if (gameEngine != null)
         {

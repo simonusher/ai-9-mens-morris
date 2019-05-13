@@ -286,10 +286,6 @@ public class GameState
                 {
                     WinningPlayer = PlayerNumber.FirstPlayer;
                 }
-                else
-                {
-                    WinningPlayer = PlayerNumber.None;
-                }
             }
         }
     }
