@@ -40,6 +40,8 @@ public class GameUIController : MonoBehaviour
     [SerializeField] private Sprite firstPlayerPawnImage = null;
     [SerializeField] private Sprite secondPlayerPawnImage = null;
     [SerializeField] private Sprite emptyField = null;
+    [SerializeField] private string winningPlayerTextTemplate = "Won: ";
+    [SerializeField] private TextMeshProUGUI winningPlayerTextField = null;
 
     private Color emptyColor = new Color(255, 255, 255, 0);
     private Color nonEmptyColor = new Color(255, 255, 255, 255);
@@ -186,11 +188,27 @@ public class GameUIController : MonoBehaviour
 
     private void OnGameFinished(PlayerNumber winningPlayer)
     {
-        Debug.Log(string.Format("Player {0} won!", winningPlayer));
+        UpdateWinningPlayerText(winningPlayer);
         gameEngine.OnBoardChanged -= OnBoardUpdated;
         gameEngine.OnGameFinished -= OnGameFinished;
         gameEngine.OnPlayerTurnChanged -= OnPlayerTurnChanged;
+        gameEngine.OnPlayerTurnChanged -= aiPlayersController.OnPlayerTurnChanged;
         gameEngine = null;
+        aiPlayersController = null;
+        playButton.interactable = true;
+    }
+
+    private void UpdateWinningPlayerText(PlayerNumber winningPlayer)
+    {
+        Color winningPlayerColor = firstPlayerColor;
+        string winnningPlayerString = "Player 1";
+        if(winningPlayer == PlayerNumber.SecondPlayer)
+        {
+            winnningPlayerString = "Player 2";
+            winningPlayerColor = secondPlayerColor;
+        }
+        winningPlayerTextField.text = winningPlayerTextTemplate + winnningPlayerString;
+        winningPlayerTextField.faceColor = winningPlayerColor;
     }
 
     private void HandleButtonClick(int fieldIndex)
@@ -200,12 +218,6 @@ public class GameUIController : MonoBehaviour
             gameEngine.HandleSelection(fieldIndex);
         }
     }
-
-    private void SetUiActive(bool active)
-    {
-
-    }
-
 
     private void Update()
     {
