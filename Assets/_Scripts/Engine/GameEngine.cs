@@ -40,14 +40,14 @@ public class GameEngine
     private void OnGameStateChanged()
     {
         OnBoardChanged(GameState.CurrentBoard);
-        if(GameState.CurrentMovingPlayer != lastPlayerTurn)
+        if (GameState.WinningPlayer != PlayerNumber.None)
+        {
+            OnGameFinished(GameState.WinningPlayer);
+        }
+        if (GameState.CurrentMovingPlayer != lastPlayerTurn)
         {
             lastPlayerTurn = GameState.CurrentMovingPlayer;
             OnPlayerTurnChanged(lastPlayerTurn);
-        }
-        if(GameState.WinningPlayer != PlayerNumber.None)
-        {
-            OnGameFinished(GameState.WinningPlayer);
         }
     }
 
@@ -60,5 +60,10 @@ public class GameEngine
         GameState = gameState;
         GameState.OnGameStateChanged += OnGameStateChanged;
         OnGameStateChanged();
+    }
+
+    public List<int> GetCurrentPossibleMoves()
+    {
+        return GameState.GetCurrentPlayerPossibleMoveIndices();
     }
 }

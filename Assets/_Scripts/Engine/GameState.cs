@@ -10,7 +10,7 @@ public enum MillGameStage
 public class GameState
 {
     private static int N_POSSIBLE_MILLS = 16;
-    private static int PLAYERS_PAWNS = 9;
+    private static int PLAYERS_PAWNS = 4;
     private static int LOSING_PAWNS_NUMBER_THRESHOLD = 2;
     private static int FLYING_PAWNS_NUMBER = 3;
     private static Mill[] POSSIBLE_MILLS;
@@ -164,6 +164,7 @@ public class GameState
     private void PerformSelectedMove(Field newField)
     {
         LastSelectedField.MoveTo(newField);
+        LastSelectedField = null;
         TogglePawnDeletingOrSwitchPlayer();
     }
 
@@ -272,19 +273,23 @@ public class GameState
         }
         else
         {
-            int firstPlayersPossibleMoves = GetAllPossibleMoves(PlayerNumber.FirstPlayer, CurrentBoard).Count;
-            int secondPlayerPossibleMoves = GetAllPossibleMoves(PlayerNumber.SecondPlayer, CurrentBoard).Count;
-            if (FirstPlayersPawnsLeft <= LOSING_PAWNS_NUMBER_THRESHOLD || firstPlayersPossibleMoves == 0)
+            if(PawnsToRemove == 0)
             {
-                WinningPlayer = PlayerNumber.SecondPlayer;
-            }
-            else if (SecondPlayersPawnsLeft <= LOSING_PAWNS_NUMBER_THRESHOLD || secondPlayerPossibleMoves == 0)
-            {
-                WinningPlayer = PlayerNumber.FirstPlayer;
-            }
-            else
-            {
-                WinningPlayer = PlayerNumber.None;
+
+                int firstPlayersPossibleMoves = GetAllPossibleMoves(PlayerNumber.FirstPlayer, CurrentBoard).Count;
+                int secondPlayerPossibleMoves = GetAllPossibleMoves(PlayerNumber.SecondPlayer, CurrentBoard).Count;
+                if (FirstPlayersPawnsLeft <= LOSING_PAWNS_NUMBER_THRESHOLD || firstPlayersPossibleMoves == 0)
+                {
+                    WinningPlayer = PlayerNumber.SecondPlayer;
+                }
+                else if (SecondPlayersPawnsLeft <= LOSING_PAWNS_NUMBER_THRESHOLD || secondPlayerPossibleMoves == 0)
+                {
+                    WinningPlayer = PlayerNumber.FirstPlayer;
+                }
+                else
+                {
+                    WinningPlayer = PlayerNumber.None;
+                }
             }
         }
     }
@@ -584,5 +589,27 @@ public class GameState
         HashSet<Mill> millDifference = new HashSet<Mill>(this.ActiveMills);
         millDifference.ExceptWith(other.ActiveMills);
         return millDifference;
+    }
+
+    public List<int> GetCurrentPlayerPossibleMoveIndices()
+    {
+        if(LastSelectedField == null)
+        {
+            return new List<int>();
+        }
+        List<Field> fields;
+        if (CurrentPlayersPawnsLeft <= FLYING_PAWNS_NUMBER)
+        {
+            fields = GetPossibleNewFieldsFlying(LastSelectedField, CurrentBoard);
+        } else
+        {
+            fields = GetPossibleNewFields(LastSelectedField, CurrentBoard);
+        }
+        List<int> indices = new List<int>();
+        foreach(var field in fields)
+        {
+            indices.Add(field.FieldIndex);
+        }
+        return indices;
     }
 }

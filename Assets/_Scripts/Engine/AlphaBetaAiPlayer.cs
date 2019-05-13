@@ -1,17 +1,7 @@
-﻿using System.Collections.Generic;
-
-public class GameTreeNode {
-    public GameState GameState;
-    public double Evaluation;
-
-    public GameTreeNode(GameState gameState, double evaluation)
-    {
-        GameState = gameState;
-        Evaluation = evaluation;
-    }
-}
-
-public class MinMaxAiPlayer : AiPlayer
+﻿using System.Collections;
+using System.Collections.Generic;
+using System;
+public class AlphaBetaAiPlayer : AiPlayer
 {
     GameEngine game;
     Heuristic heuristic;
@@ -19,7 +9,7 @@ public class MinMaxAiPlayer : AiPlayer
 
     private int searchDepth;
 
-    public MinMaxAiPlayer(GameEngine game, Heuristic heuristic, PlayerNumber playerNumber, int searchDepth)
+    public AlphaBetaAiPlayer(GameEngine game, Heuristic heuristic, PlayerNumber playerNumber, int searchDepth)
     {
         this.game = game;
         this.heuristic = heuristic;
@@ -31,18 +21,18 @@ public class MinMaxAiPlayer : AiPlayer
     {
         GameTreeNode bestPossibleMove = null;
         GameState currentState = game.GameState;
-        if(playerNumber == PlayerNumber.FirstPlayer)
+        if (playerNumber == PlayerNumber.FirstPlayer)
         {
-            bestPossibleMove = MinMax(currentState, searchDepth, true);
+            bestPossibleMove = MinMax(currentState, searchDepth, Double.NegativeInfinity, Double.PositiveInfinity, true);
         }
         else
         {
-            bestPossibleMove = MinMax(currentState, searchDepth, false);
+            bestPossibleMove = MinMax(currentState, searchDepth, Double.NegativeInfinity, Double.PositiveInfinity, false);
         }
         game.MakeMove(bestPossibleMove.GameState);
     }
 
-    private GameTreeNode MinMax(GameState currentState, int depth, bool maximizingPlayer)
+    private GameTreeNode MinMax(GameState currentState, int depth, double alpha, double beta, bool maximizingPlayer)
     {
         GameTreeNode bestMove = null;
         if (depth == 0 || currentState.WinningPlayer != PlayerNumber.None)
@@ -57,11 +47,20 @@ public class MinMaxAiPlayer : AiPlayer
             List<GameState> nextStates = currentState.GetAllPossibleNextStates(PlayerNumber.FirstPlayer);
             foreach (var nextState in nextStates)
             {
-                GameTreeNode bestChild = MinMax(nextState, depth - 1, false);
-                if(maxEval < bestChild.Evaluation)
+                GameTreeNode bestChild = MinMax(nextState, depth - 1, alpha, beta, false);
+                if(bestChild == null)
+                {
+                    currentState.GetAllPossibleNextStates(PlayerNumber.FirstPlayer);
+                }
+                if (maxEval < bestChild.Evaluation)
                 {
                     bestMove = new GameTreeNode(nextState, bestChild.Evaluation);
                     maxEval = bestChild.Evaluation;
+                }
+                alpha = Math.Max(alpha, bestChild.Evaluation);
+                if(beta <= alpha)
+                {
+                    break;
                 }
             }
 
@@ -72,13 +71,27 @@ public class MinMaxAiPlayer : AiPlayer
             List<GameState> nextStates = currentState.GetAllPossibleNextStates(PlayerNumber.SecondPlayer);
             foreach (var nextState in nextStates)
             {
-                GameTreeNode bestChild = MinMax(nextState, depth - 1, true);
+                GameTreeNode bestChild = MinMax(nextState, depth - 1, alpha, beta, true);
+                if (bestChild == null)
+                {
+                    currentState.GetAllPossibleNextStates(PlayerNumber.SecondPlayer);
+                }
                 if (minEval > bestChild.Evaluation)
                 {
                     bestMove = new GameTreeNode(nextState, bestChild.Evaluation);
                     minEval = bestChild.Evaluation;
                 }
+                beta = Math.Min(beta, bestChild.Evaluation);
+                if (beta <= alpha)
+                {
+                    break;
+                }
             }
+            
+        }
+        if(bestMove == null)
+        {
+            Console.Write("ble");
         }
         return bestMove;
     }

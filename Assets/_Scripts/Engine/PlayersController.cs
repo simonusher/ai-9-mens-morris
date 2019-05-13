@@ -30,7 +30,6 @@ public class PlayersController
             {
                 HandleAiMove(secondAiPlayer);
             }
-            //Thread.Sleep(1000);
         }
     }
 

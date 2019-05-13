@@ -87,9 +87,10 @@ public class GameUIController : MonoBehaviour
         //AiPlayer aiPlayer = new RandomAiPlayer(PlayerNumber.FirstPlayer, gameEngine);
         //AiPlayer aiPlayer2 = new RandomAiPlayer(PlayerNumber.SecondPlayer, gameEngine);
         Heuristic h1 = new SimplePawnNumberHeuristic();
-        //AiPlayer aiPlayer = new RandomAiPlayer(PlayerNumber.FirstPlayer, gameEngine);
-        AiPlayer aiPlayer = new MinMaxAiPlayer(gameEngine, h1, PlayerNumber.FirstPlayer, 1);
-        AiPlayer aiPlayer2 = new MinMaxAiPlayer(gameEngine, h1, PlayerNumber.SecondPlayer, 2);
+        AiPlayer aiPlayer = new RandomAiPlayer(PlayerNumber.FirstPlayer, gameEngine);
+        //AiPlayer aiPlayer = new MinMaxAiPlayer(gameEngine, h1, PlayerNumber.FirstPlayer, 1);
+        //AiPlayer aiPlayer = new MinMaxAiPlayer(gameEngine, h1, PlayerNumber.FirstPlayer, 1);
+        AiPlayer aiPlayer2 = new AlphaBetaAiPlayer(gameEngine, h1, PlayerNumber.SecondPlayer, 3);
         playersController = new PlayersController(aiPlayer, aiPlayer2);
         //playersController = new PlayersController(secondAiPlayer: aiPlayer2);
         OnBoardUpdated(gameEngine.GameState.CurrentBoard);
@@ -166,6 +167,21 @@ public class GameUIController : MonoBehaviour
         if(playersController != null)
         {
             playersController.CheckStep();
+        }
+        if (gameEngine != null)
+        {
+            List<int> possibleMoveIndices = gameEngine.GetCurrentPossibleMoves();
+            for(int i = 0; i < pawnButtons.Length; i++)
+            {
+                Image[] images = pawnButtons[i].GetComponentsInChildren<Image>();
+                if (possibleMoveIndices.Contains(i))
+                {
+                    images[1].enabled = true;
+                } else
+                {
+                    images[1].enabled = false;
+                }
+            }
         }
     }
 }
