@@ -14,6 +14,9 @@ public class GameEngine
     public delegate void PlayerTurnChanged(PlayerNumber currentMovingPlayerNumber);
     public event PlayerTurnChanged OnPlayerTurnChanged = delegate { };
 
+    public delegate void OnLastFieldSelected();
+    public event OnLastFieldSelected OnLastFieldSelectedChanged = delegate { };
+
     private bool shouldLogToFile;
 
     public GameState GameState { get; private set; }
@@ -40,11 +43,6 @@ public class GameEngine
 
     private void OnGameStateChanged()
     {
-        Debug.Log(GameState.WinningPlayer);
-        foreach(Mill mill in GameState.ClosedMills)
-        {
-            Debug.Log(mill);
-        }
         OnBoardChanged(GameState.CurrentBoard);
         if (GameState.WinningPlayer != PlayerNumber.None)
         {
@@ -55,6 +53,7 @@ public class GameEngine
             lastPlayerTurn = GameState.CurrentMovingPlayer;
             OnPlayerTurnChanged(lastPlayerTurn);
         }
+        UpdateLastFieldSelected();
     }
 
     private void RegisterNewGameState(GameState gameState)
@@ -62,13 +61,20 @@ public class GameEngine
         if(GameState != null)
         {
             GameState.OnGameStateChanged -= OnGameStateChanged;
+            GameState.OnLastSelectedFieldChanged -= UpdateLastFieldSelected;
         }
         GameState = gameState;
         GameState.OnGameStateChanged += OnGameStateChanged;
+        GameState.OnLastSelectedFieldChanged += UpdateLastFieldSelected;
         OnGameStateChanged();
     }
 
-    public List<int> GetCurrentPossibleMoves()
+    private void UpdateLastFieldSelected()
+    {
+        OnLastFieldSelectedChanged();
+    }
+
+    public HashSet<int> GetCurrentPossibleMoves()
     {
         return GameState.GetCurrentPlayerPossibleMoveIndices();
     }

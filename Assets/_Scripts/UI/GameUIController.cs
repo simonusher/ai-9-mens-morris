@@ -117,6 +117,8 @@ public class GameUIController : MonoBehaviour
         gameEngine.OnGameFinished += OnGameFinished;
         gameEngine.OnPlayerTurnChanged += OnPlayerTurnChanged;
         gameEngine.OnPlayerTurnChanged += aiPlayersController.OnPlayerTurnChanged;
+        gameEngine.OnLastFieldSelectedChanged += UpdatePossibleMoveIndicators;
+        UpdateWinningPlayerText(PlayerNumber.None);
         playButton.interactable = false;
     }
 
@@ -198,6 +200,7 @@ public class GameUIController : MonoBehaviour
         gameEngine.OnGameFinished -= OnGameFinished;
         gameEngine.OnPlayerTurnChanged -= OnPlayerTurnChanged;
         gameEngine.OnPlayerTurnChanged -= aiPlayersController.OnPlayerTurnChanged;
+        gameEngine.OnLastFieldSelectedChanged -= UpdatePossibleMoveIndicators;
         gameEngine = null;
         aiPlayersController = null;
         playButton.interactable = true;
@@ -206,13 +209,16 @@ public class GameUIController : MonoBehaviour
     private void UpdateWinningPlayerText(PlayerNumber winningPlayer)
     {
         Color winningPlayerColor = firstPlayerColor;
-        string winnningPlayerString = "Player 1";
+        string winningPlayerString = "Player 1";
         if(winningPlayer == PlayerNumber.SecondPlayer)
         {
-            winnningPlayerString = "Player 2";
+            winningPlayerString = "Player 2";
             winningPlayerColor = secondPlayerColor;
+        } else if(winningPlayer == PlayerNumber.None)
+        {
+            winningPlayerString = "";
         }
-        winningPlayerTextField.text = winningPlayerTextTemplate + winnningPlayerString;
+        winningPlayerTextField.text = winningPlayerTextTemplate + winningPlayerString;
         winningPlayerTextField.faceColor = winningPlayerColor;
     }
 
@@ -243,7 +249,6 @@ public class GameUIController : MonoBehaviour
     {
         if (gameEngine != null)
         {
-            UpdatePossibleMoveIndicators();
             UpdateMoveNumberText();
             UpdateTime();
         }
@@ -265,17 +270,21 @@ public class GameUIController : MonoBehaviour
 
     private void UpdatePossibleMoveIndicators()
     {
-        List<int> possibleMoveIndices = gameEngine.GetCurrentPossibleMoves();
-        for (int i = 0; i < pawnButtons.Length; i++)
+        HashSet<int> possibleMoveIndices = gameEngine.GetCurrentPossibleMoves();
+        if (possibleMoveIndices == null)
         {
-            Image[] images = pawnButtons[i].GetComponentsInChildren<Image>();
-            if (possibleMoveIndices.Contains(i))
+            for (int i = 0; i < pawnButtons.Length; i++)
             {
-                images[1].enabled = true;
-            }
-            else
-            {
+                Image[] images = pawnButtons[i].GetComponentsInChildren<Image>();
                 images[1].enabled = false;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < pawnButtons.Length; i++)
+            {
+                Image[] images = pawnButtons[i].GetComponentsInChildren<Image>();
+                images[1].enabled = possibleMoveIndices.Contains(i);
             }
         }
     }

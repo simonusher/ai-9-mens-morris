@@ -20,6 +20,9 @@ public class GameState
     public delegate void GameStateChanged();
     public event GameStateChanged OnGameStateChanged = delegate { };
 
+    public delegate void LastSelectedFieldChanged();
+    public event LastSelectedFieldChanged OnLastSelectedFieldChanged = delegate { };
+
     public MillGameStage GameStage { get; private set; }
     public int FirstPlayersPawnsLeft {
         get {
@@ -62,7 +65,18 @@ public class GameState
     public HashSet<Mill> ClosedMills { get; private set; }
     public int PawnsToRemove { get; set; }
 
-    public Field LastSelectedField { get; set; }
+    private Field _lastSelectedField = null;
+    public Field LastSelectedField {
+        get
+        {
+            return _lastSelectedField;
+        }
+        set
+        {
+            _lastSelectedField = value;
+            OnLastSelectedFieldChanged();
+        }
+    }
 
     public Board CurrentBoard { get; }
 
@@ -615,11 +629,11 @@ public class GameState
         return millDifference;
     }
 
-    public List<int> GetCurrentPlayerPossibleMoveIndices()
+    public HashSet<int> GetCurrentPlayerPossibleMoveIndices()
     {
         if(LastSelectedField == null)
         {
-            return new List<int>();
+            return null;
         }
         List<Field> fields;
         if (CurrentPlayersPawnsLeft <= FLYING_PAWNS_NUMBER)
@@ -629,7 +643,7 @@ public class GameState
         {
             fields = GetPossibleNewFields(LastSelectedField, CurrentBoard);
         }
-        List<int> indices = new List<int>();
+        HashSet<int> indices = new HashSet<int>();
         foreach(var field in fields)
         {
             indices.Add(field.FieldIndex);
