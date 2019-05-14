@@ -1,20 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System;
-public class AlphaBetaAiPlayer : AiPlayer
+
+public class FastAlphaBetaAiPlayer : AiPlayer
 {
     GameEngine game;
-    Heuristic heuristic;
+    Heuristic sortHeuristic;
+    Heuristic evaluationHeuristic;
     PlayerNumber playerNumber;
 
     private int searchDepth;
 
-    public AlphaBetaAiPlayer(GameEngine game, Heuristic heuristic, PlayerNumber playerNumber, int searchDepth)
+    public FastAlphaBetaAiPlayer(GameEngine game, Heuristic evaluationHeuristic, PlayerNumber playerNumber, int searchDepth, Heuristic sortHeuristic = null)
     {
         this.game = game;
-        this.heuristic = heuristic;
+        this.evaluationHeuristic = evaluationHeuristic;
         this.playerNumber = playerNumber;
         this.searchDepth = searchDepth * 2;
+        if(sortHeuristic == null)
+        {
+            this.sortHeuristic = evaluationHeuristic;
+        } else
+        {
+            this.sortHeuristic = sortHeuristic;
+        }
     }
 
     public void MakeMove()
@@ -37,7 +46,7 @@ public class AlphaBetaAiPlayer : AiPlayer
         GameTreeNode bestMove = null;
         if (depth == 0 || currentState.WinningPlayer != PlayerNumber.None)
         {
-            double evaluation = heuristic.Evaluate(currentState);
+            double evaluation = evaluationHeuristic.Evaluate(currentState);
             bestMove = new GameTreeNode(currentState, evaluation);
         }
 
@@ -45,11 +54,18 @@ public class AlphaBetaAiPlayer : AiPlayer
         {
             double maxEval = double.NegativeInfinity;
             List<GameState> nextStates = currentState.GetAllPossibleNextStates(PlayerNumber.FirstPlayer);
-            
+            foreach (var state in nextStates)
+            {
+                state.Evaluation = sortHeuristic.Evaluate(state);
+            }
+            nextStates.Sort((s1, s2) =>
+            {
+                return Math.Sign(s2.Evaluation - s1.Evaluation);
+            });
             foreach (var nextState in nextStates)
             {
                 GameTreeNode bestChild = MinMax(nextState, depth - 1, alpha, beta, false);
-                if(bestChild == null)
+                if (bestChild == null)
                 {
                     currentState.GetAllPossibleNextStates(PlayerNumber.FirstPlayer);
                 }
@@ -59,7 +75,7 @@ public class AlphaBetaAiPlayer : AiPlayer
                     maxEval = bestChild.Evaluation;
                 }
                 alpha = Math.Max(alpha, bestChild.Evaluation);
-                if(beta <= alpha)
+                if (beta <= alpha)
                 {
                     break;
                 }
@@ -70,6 +86,14 @@ public class AlphaBetaAiPlayer : AiPlayer
         {
             double minEval = double.PositiveInfinity;
             List<GameState> nextStates = currentState.GetAllPossibleNextStates(PlayerNumber.SecondPlayer);
+            foreach (var state in nextStates)
+            {
+                state.Evaluation = sortHeuristic.Evaluate(state);
+            }
+            nextStates.Sort((s1, s2) =>
+            {
+                return Math.Sign(s1.Evaluation - s2.Evaluation);
+            });
             foreach (var nextState in nextStates)
             {
                 GameTreeNode bestChild = MinMax(nextState, depth - 1, alpha, beta, true);
@@ -88,7 +112,7 @@ public class AlphaBetaAiPlayer : AiPlayer
                     break;
                 }
             }
-            
+
         }
         return bestMove;
     }

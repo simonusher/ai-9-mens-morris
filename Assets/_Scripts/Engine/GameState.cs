@@ -78,6 +78,8 @@ public class GameState
         }
     }
 
+    public double Evaluation { get; set; }
+
     public Board CurrentBoard { get; }
 
     public int MovesMade { get; private set; }

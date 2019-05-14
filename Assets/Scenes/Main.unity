@@ -4303,6 +4303,8 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Alfa-beta
       m_Image: {fileID: 0}
+    - m_Text: Fast Alfa-beta
+      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -4990,6 +4992,8 @@ MonoBehaviour:
     - m_Text: Min-max
       m_Image: {fileID: 0}
     - m_Text: Alfa-beta
+      m_Image: {fileID: 0}
+    - m_Text: Fast Alfa-beta
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:

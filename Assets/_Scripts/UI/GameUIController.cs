@@ -11,6 +11,7 @@ public class GameUIController : MonoBehaviour
     private static readonly int AI_DROPDOWN_NUMBER = 1;
     private static readonly int MIN_MAX_DROPDOWN_NUMBER = 0;
     private static readonly int ALPHA_BETA_DROPDOWN_NUMBER = 1;
+    private static readonly int FAST_ALPHA_BETA_DROPDOWN_NUMBER = 1;
 
     private static Dictionary<int, Func<Heuristic>> heuristicDictionary;
 
@@ -148,9 +149,15 @@ public class GameUIController : MonoBehaviour
             if(algorithmDropdown.value == MIN_MAX_DROPDOWN_NUMBER)
             {
                 return new MinMaxAiPlayer(gameEngine, heuristic, playerNumber, searchDepth);
-            } else
+            }
+            else if(algorithmDropdown.value == ALPHA_BETA_DROPDOWN_NUMBER)
             {
                 return new AlphaBetaAiPlayer(gameEngine, heuristic, playerNumber, searchDepth);
+            }
+            else
+            {
+                Heuristic sortHeuristic = new SimplePawnNumberHeuristic();
+                return new FastAlphaBetaAiPlayer(gameEngine, heuristic, playerNumber, searchDepth, sortHeuristic);
             }
         }
         return null;
