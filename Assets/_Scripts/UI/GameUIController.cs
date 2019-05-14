@@ -52,6 +52,8 @@ public class GameUIController : MonoBehaviour
     private GameEngine gameEngine = null;
     private PlayersController aiPlayersController = null;
 
+    private float timePassed;
+
     static GameUIController()
     {
         heuristicDictionary = new Dictionary<int, Func<Heuristic>>();
@@ -109,6 +111,7 @@ public class GameUIController : MonoBehaviour
         AiPlayer firstPlayer = InitPlayer(PlayerNumber.FirstPlayer);
         AiPlayer secondPlayer = InitPlayer(PlayerNumber.SecondPlayer);
         aiPlayersController = new PlayersController(firstPlayer, secondPlayer);
+        timePassed = 0;
         OnBoardUpdated(gameEngine.GameState.CurrentBoard);
         gameEngine.OnBoardChanged += OnBoardUpdated;
         gameEngine.OnGameFinished += OnGameFinished;
@@ -223,23 +226,55 @@ public class GameUIController : MonoBehaviour
 
     private void Update()
     {
-        if(aiPlayersController != null)
+        MakeAiControllerStep();
+        UpdateGameStateData();
+    }
+
+    private void MakeAiControllerStep()
+    {
+        if (aiPlayersController != null)
         {
             aiPlayersController.CheckStep();
         }
+    }
+
+    private void UpdateGameStateData()
+    {
         if (gameEngine != null)
         {
-            List<int> possibleMoveIndices = gameEngine.GetCurrentPossibleMoves();
-            for(int i = 0; i < pawnButtons.Length; i++)
+            UpdatePossibleMoveIndicators();
+            UpdateMoveNumberText();
+            UpdateTime();
+        }
+    }
+
+    private void UpdateTime()
+    {
+        if (!gameEngine.GameState.GameFinished)
+        {
+            timePassed += Time.deltaTime;
+            timerText.text = string.Format(timerTemplateText, Math.Truncate(timePassed * 100) / 100);
+        }
+    }
+
+    private void UpdateMoveNumberText()
+    {
+        numberOfMovesText.text = string.Format(numberOfMovesTemplateText, gameEngine.GameState.MovesMade);
+    }
+
+    private void UpdatePossibleMoveIndicators()
+    {
+        List<int> possibleMoveIndices = gameEngine.GetCurrentPossibleMoves();
+        for (int i = 0; i < pawnButtons.Length; i++)
+        {
+            Image[] images = pawnButtons[i].GetComponentsInChildren<Image>();
+            if (possibleMoveIndices.Contains(i))
             {
-                Image[] images = pawnButtons[i].GetComponentsInChildren<Image>();
-                if (possibleMoveIndices.Contains(i))
-                {
-                    images[1].enabled = true;
-                } else
-                {
-                    images[1].enabled = false;
-                }
+                images[1].enabled = true;
+            }
+            else
+            {
+                images[1].enabled = false;
             }
         }
     }
