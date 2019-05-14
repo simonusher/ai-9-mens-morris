@@ -52,6 +52,7 @@ public class Field
     public bool CanMoveTo(Field other)
     {
         return (LastFieldIndex == FIELD_INDEX_UNSET || LastFieldIndex != other.FieldIndex) && other.PawnPlayerNumber == PlayerNumber.None;
+        //return other.PawnPlayerNumber == PlayerNumber.None;
     }
 
     public bool BelongsTo(PlayerNumber player)

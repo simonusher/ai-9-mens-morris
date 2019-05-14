@@ -89,10 +89,6 @@ public class AlphaBetaAiPlayer : AiPlayer
             }
             
         }
-        if(bestMove == null)
-        {
-            Console.Write("ble");
-        }
         return bestMove;
     }
 }

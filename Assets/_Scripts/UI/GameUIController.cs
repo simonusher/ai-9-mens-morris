@@ -234,7 +234,8 @@ public class GameUIController : MonoBehaviour
     {
         if (aiPlayersController != null)
         {
-            aiPlayersController.CheckStep();
+            long timeMilis = aiPlayersController.CheckStep();
+            timePassed += timeMilis / 1000f;
         }
     }
 

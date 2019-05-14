@@ -1,14 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Threading;
-
+﻿using System.Diagnostics;
 public class PlayersController
 {
     private AiPlayer firstAiPlayer;
     private AiPlayer secondAiPlayer;
     private bool gameEngineReady;
     private PlayerNumber currentPlayerTurn;
+    private Stopwatch stopWatch;
 
     public PlayersController(AiPlayer firstAiPlayer = null, AiPlayer secondAiPlayer = null)
     {
@@ -18,10 +15,11 @@ public class PlayersController
         this.gameEngineReady = true;
     }
 
-    public void CheckStep()
+    public long CheckStep()
     {
         if (gameEngineReady)
         {
+            stopWatch = Stopwatch.StartNew();
             if(currentPlayerTurn == PlayerNumber.FirstPlayer)
             {
                 HandleAiMove(firstAiPlayer);
@@ -30,6 +28,11 @@ public class PlayersController
             {
                 HandleAiMove(secondAiPlayer);
             }
+            stopWatch.Stop();
+            return stopWatch.ElapsedMilliseconds;
+        } else
+        {
+            return 0;
         }
     }
 
