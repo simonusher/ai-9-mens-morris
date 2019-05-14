@@ -59,6 +59,7 @@ public class GameState
     }
 
     public HashSet<Mill> ActiveMills { get; private set; }
+    public HashSet<Mill> ClosedMills { get; private set; }
     public int PawnsToRemove { get; set; }
 
     public Field LastSelectedField { get; set; }
@@ -74,6 +75,7 @@ public class GameState
         WinningPlayer = PlayerNumber.None;
         CurrentMovingPlayer = PlayerNumber.FirstPlayer;
         ActiveMills = new HashSet<Mill>();
+        ClosedMills = new HashSet<Mill>();
         PawnsToRemove = 0;
     }
     
@@ -86,6 +88,7 @@ public class GameState
         WinningPlayer = other.WinningPlayer;
         CurrentMovingPlayer = other.CurrentMovingPlayer;
         ActiveMills = new HashSet<Mill>(other.ActiveMills);
+        ClosedMills = new HashSet<Mill>(other.ClosedMills);
         PawnsToRemove = 0;
         LastSelectedField = null;
     }
@@ -225,6 +228,7 @@ public class GameState
         {
             PawnsToRemove = millDifference.NewMills.Count;
             ActiveMills = millDifference.TurnActiveMills;
+            ClosedMills = millDifference.NewMills;
         }
         else
         {
@@ -263,7 +267,11 @@ public class GameState
 
     private void RecalculateActiveMills()
     {
-        ActiveMills = GetActiveMills(CurrentBoard);
+        HashSet<Mill> newMills = GetActiveMills(CurrentBoard);
+        HashSet<Mill> closedMills = new HashSet<Mill>(newMills);
+        closedMills.ExceptWith(ActiveMills);
+        ActiveMills = newMills;
+        ClosedMills = closedMills;
     }
     private void RecalculateWinningPlayer()
     {
@@ -391,6 +399,11 @@ public class GameState
         {
             return GetSecondStageNextPossibleStates(playerNumber);
         }
+    }
+
+    public int GetPossibleMovesNumberForPlayer(PlayerNumber playerNumber)
+    {
+        return GetAllPossibleMoves(playerNumber, CurrentBoard).Count;
     }
 
     private List<Move> GetAllPossibleMoves(PlayerNumber playerNumber, Board board)

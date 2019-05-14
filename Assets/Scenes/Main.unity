@@ -5709,6 +5709,10 @@ MonoBehaviour:
     m_Options:
     - m_Text: Pawn Number
       m_Image: {fileID: 0}
+    - m_Text: Pawn+Mill Number
+      m_Image: {fileID: 0}
+    - m_Text: Pawn+Move Number
+      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -13525,6 +13529,10 @@ MonoBehaviour:
   m_Options:
     m_Options:
     - m_Text: Pawn Number
+      m_Image: {fileID: 0}
+    - m_Text: Pawn+Mill Number
+      m_Image: {fileID: 0}
+    - m_Text: Pawn+Move Number
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:

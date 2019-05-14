@@ -56,6 +56,8 @@ public class GameUIController : MonoBehaviour
     {
         heuristicDictionary = new Dictionary<int, Func<Heuristic>>();
         heuristicDictionary[0] = () => new SimplePawnNumberHeuristic();
+        heuristicDictionary[1] = () => new PawnMillNumberHeuristic();
+        heuristicDictionary[2] = () => new PawnMoveNumberHeuristic();
     }
 
     private void Awake()

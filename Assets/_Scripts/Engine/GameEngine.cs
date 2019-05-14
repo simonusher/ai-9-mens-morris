@@ -41,6 +41,10 @@ public class GameEngine
     private void OnGameStateChanged()
     {
         Debug.Log(GameState.WinningPlayer);
+        foreach(Mill mill in GameState.ClosedMills)
+        {
+            Debug.Log(mill);
+        }
         OnBoardChanged(GameState.CurrentBoard);
         if (GameState.WinningPlayer != PlayerNumber.None)
         {

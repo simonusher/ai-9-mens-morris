@@ -1,15 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class SimplePawnNumberHeuristic : Heuristic
+﻿public class SimplePawnNumberHeuristic : Heuristic
 {
-    private static readonly int DEFAULT_WINNING_WEIGHT = 100;
+    private static readonly int DEFAULT_WINNING_WEIGHT = 1086;
+    private static readonly int DEFAULT_PAWN_WEIGHT = 9;
 
-    public double Evaluate(GameState gameState)
+    public virtual double Evaluate(GameState gameState)
     {
         PlayerNumber winningPlayer = gameState.WinningPlayer;
-        double evaluation = gameState.FirstPlayersPawnsLeft - gameState.SecondPlayersPawnsLeft;
+        double evaluation = DEFAULT_PAWN_WEIGHT * (gameState.FirstPlayersPawnsLeft - gameState.SecondPlayersPawnsLeft);
         if (winningPlayer == PlayerNumber.FirstPlayer)
         {
             evaluation += DEFAULT_WINNING_WEIGHT;
