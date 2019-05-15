@@ -24,9 +24,8 @@ public class GameEngine
     private PlayerNumber lastPlayerTurn;
 
 
-    public GameEngine(bool shouldLogToFile)
+    public GameEngine()
     {
-        this.shouldLogToFile = shouldLogToFile;
         lastPlayerTurn = PlayerNumber.FirstPlayer;
         RegisterNewGameState(new GameState());
     }

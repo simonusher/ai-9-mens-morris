@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 public enum MillGameStage
@@ -16,6 +17,9 @@ public class GameState
     private static Mill[] POSSIBLE_MILLS;
     private static List<List<int>> possibleMoveIndices;
     private static string[] fieldNames;
+    private static Dictionary<PlayerNumber, string> playerNames;
+
+    public string MovesUntilNow { get; private set; }
 
     public delegate void GameStateChanged();
     public event GameStateChanged OnGameStateChanged = delegate { };
@@ -103,6 +107,7 @@ public class GameState
         ClosedMills = new HashSet<Mill>();
         PawnsToRemove = 0;
         MovesMade = 0;
+        MovesUntilNow = "";
     }
     
     public GameState(GameState other)
@@ -118,6 +123,7 @@ public class GameState
         PawnsToRemove = 0;
         LastSelectedField = null;
         MovesMade = other.MovesMade;
+        MovesUntilNow = string.Copy(other.MovesUntilNow);
     }
     public void HandleSelection(int fieldIndex)
     {
@@ -193,6 +199,7 @@ public class GameState
 
     private void PerformSelectedMove(Field newField)
     {
+        LogMoveMove(CurrentMovingPlayer, LastSelectedField.FieldIndex, newField.FieldIndex);
         LastSelectedField.MoveTo(newField);
         LastSelectedField = null;
         MovesMade++;
@@ -220,6 +227,7 @@ public class GameState
     private void RemovePawn(Field field)
     {
         field.Reset();
+        LogRemoveMove(CurrentMovingPlayer, field.FieldIndex);
         PawnsToRemove--;
         MovesMade++;
         RecalculateActiveMills();
@@ -248,6 +256,7 @@ public class GameState
     {
         CurrentBoard.Fields[fieldIndex].PawnPlayerNumber = playerNumber;
         NotePlayerPawnPlacing(playerNumber);
+        LogPlaceMove(playerNumber, fieldIndex);
         MovesMade++;
     }
 
@@ -351,6 +360,7 @@ public class GameState
     {
         GameState newState = new GameState(this);
         newState.CurrentBoard.GetField(move.FromFieldIndex).MoveTo(newState.CurrentBoard.GetField(move.ToFieldIndex));
+        newState.LogMoveMove(CurrentMovingPlayer, move.FromFieldIndex, move.ToFieldIndex);
         newState.MovesMade++;
         newState.SwitchPlayer();
         newState.RecalculateActiveMills();
@@ -505,6 +515,14 @@ public class GameState
         InitializeMills();
         InitializePossibleMoveIndices();
         InitializeFieldNames();
+        InitializePlayerNames();
+    }
+
+    private static void InitializePlayerNames()
+    {
+        playerNames = new Dictionary<PlayerNumber, string>();
+        playerNames[PlayerNumber.FirstPlayer] = "White";
+        playerNames[PlayerNumber.SecondPlayer] = "Black";
     }
 
     private static void InitializeMills()
@@ -651,5 +669,25 @@ public class GameState
             indices.Add(field.FieldIndex);
         }
         return indices;
+    }
+
+    private void LogMoveMove(PlayerNumber player, int fieldIndexFrom, int fieldIndexTo)
+    {
+        LogMove(player, " move " + fieldNames[fieldIndexFrom] + "/" + fieldNames[fieldIndexTo]);
+    }
+
+    private void LogPlaceMove(PlayerNumber player, int fieldIndex)
+    {
+        LogMove(player, " place " + fieldNames[fieldIndex]);
+    }
+
+    private void LogRemoveMove(PlayerNumber player, int fieldIndex)
+    {
+        LogMove(player, " remove " + fieldNames[fieldIndex]);
+    }
+
+    private void LogMove(PlayerNumber player, string move)
+    {
+        MovesUntilNow += playerNames[player] + ": " + move + "\n";
     }
 }

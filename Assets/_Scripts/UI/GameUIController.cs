@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using System.IO;
 
 public class GameUIController : MonoBehaviour
 {
@@ -54,6 +55,7 @@ public class GameUIController : MonoBehaviour
     private PlayersController aiPlayersController = null;
 
     private float timePassed;
+    private bool shouldLogToFile;
 
     static GameUIController()
     {
@@ -108,7 +110,7 @@ public class GameUIController : MonoBehaviour
 
     void StartGame()
     {
-        gameEngine = new GameEngine(false);
+        gameEngine = new GameEngine();
         AiPlayer firstPlayer = InitPlayer(PlayerNumber.FirstPlayer);
         AiPlayer secondPlayer = InitPlayer(PlayerNumber.SecondPlayer);
         aiPlayersController = new PlayersController(firstPlayer, secondPlayer);
@@ -120,6 +122,7 @@ public class GameUIController : MonoBehaviour
         gameEngine.OnPlayerTurnChanged += aiPlayersController.OnPlayerTurnChanged;
         gameEngine.OnLastFieldSelectedChanged += UpdatePossibleMoveIndicators;
         UpdateWinningPlayerText(PlayerNumber.None);
+        shouldLogToFile = logToFileToggle.isOn;
         playButton.interactable = false;
     }
 
@@ -203,6 +206,7 @@ public class GameUIController : MonoBehaviour
     private void OnGameFinished(PlayerNumber winningPlayer)
     {
         UpdateWinningPlayerText(winningPlayer);
+        SaveLogs();
         gameEngine.OnBoardChanged -= OnBoardUpdated;
         gameEngine.OnGameFinished -= OnGameFinished;
         gameEngine.OnPlayerTurnChanged -= OnPlayerTurnChanged;
@@ -211,6 +215,21 @@ public class GameUIController : MonoBehaviour
         gameEngine = null;
         aiPlayersController = null;
         playButton.interactable = true;
+    }
+
+    private void SaveLogs()
+    {
+        if (shouldLogToFile)
+        {
+            string moves = gameEngine.GameState.MovesUntilNow;
+            try
+            {
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"\" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".txt", moves);
+            } catch (Exception e)
+            {
+
+            }
+        }
     }
 
     private void UpdateWinningPlayerText(PlayerNumber winningPlayer)
