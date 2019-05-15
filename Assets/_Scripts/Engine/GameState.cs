@@ -120,7 +120,7 @@ public class GameState
         CurrentMovingPlayer = other.CurrentMovingPlayer;
         ActiveMills = new HashSet<Mill>(other.ActiveMills);
         ClosedMills = new HashSet<Mill>(other.ClosedMills);
-        PawnsToRemove = 0;
+        PawnsToRemove = other.PawnsToRemove;
         LastSelectedField = null;
         MovesMade = other.MovesMade;
         MovesUntilNow = string.Copy(other.MovesUntilNow);
@@ -206,6 +206,13 @@ public class GameState
         TogglePawnDeletingOrSwitchPlayer();
     }
 
+    private void PerformMove(Move move)
+    {
+        LogMoveMove(CurrentMovingPlayer, move.FromFieldIndex, move.ToFieldIndex);
+        CurrentBoard.GetField(move.FromFieldIndex).MoveTo(CurrentBoard.GetField(move.ToFieldIndex));
+        MovesMade++;
+        TogglePawnDeletingOrSwitchPlayer();
+    }
 
     public void HandlePawnRemoval(int fieldIndex)
     {
@@ -356,16 +363,24 @@ public class GameState
         return newState;
     }
 
-    private GameState PawnMoveGameStateFromThis(Move move)
+    private void PawnMoveGameStatesFromThis(Move move, PlayerNumber playerNumber, List<GameState> listOfAll)
     {
+        PlayerNumber otherPlayerNumber = playerNumber == PlayerNumber.FirstPlayer ? PlayerNumber.SecondPlayer : PlayerNumber.FirstPlayer;
         GameState newState = new GameState(this);
-        newState.CurrentBoard.GetField(move.FromFieldIndex).MoveTo(newState.CurrentBoard.GetField(move.ToFieldIndex));
-        newState.LogMoveMove(CurrentMovingPlayer, move.FromFieldIndex, move.ToFieldIndex);
-        newState.MovesMade++;
-        newState.SwitchPlayer();
-        newState.RecalculateActiveMills();
-        newState.CheckGameStateChanged();
-        return newState;
+        newState.PerformMove(move);
+        if(newState.PawnsToRemove == 0)
+        {
+            newState.CheckGameStateChanged();
+            listOfAll.Add(newState);
+        }
+        else
+        {
+            List<Field> otherPlayersFields = newState.CurrentBoard.GetPlayerFields(otherPlayerNumber);
+            foreach (var otherPlayerField in otherPlayersFields)
+            {
+                listOfAll.Add(newState.PawnRemovalGameStateFromThis(otherPlayerField.FieldIndex));
+            }
+        }
     }
 
     private List<GameState> GetFirstStageNextPossibleStates(PlayerNumber playerNumber)
@@ -412,20 +427,7 @@ public class GameState
         List<Move> possibleMoves = GetAllPossibleMoves(playerNumber, CurrentBoard);
         foreach (var move in possibleMoves)
         {
-            GameState nextGameState = PawnMoveGameStateFromThis(move);
-            HashSet<Mill> millDifference = nextGameState.MillDifference(this);
-            if (millDifference.Count == 0)
-            {
-                gameStates.Add(nextGameState);
-            }
-            else if (millDifference.Count == 1)
-            {
-                List<Field> otherPlayersFields = nextGameState.CurrentBoard.GetPlayerFields(otherPlayerNumber);
-                foreach (var otherPlayerField in otherPlayersFields)
-                {
-                    gameStates.Add(nextGameState.PawnRemovalGameStateFromThis(otherPlayerField.FieldIndex));
-                }
-            }
+            PawnMoveGameStatesFromThis(move, playerNumber, gameStates);
         }
         return gameStates;
     }
