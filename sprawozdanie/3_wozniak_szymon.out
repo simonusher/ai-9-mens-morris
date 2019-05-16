@@ -1,0 +1,16 @@
+\BOOKMARK [1][-]{section.1}{Wstep teoretyczny}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Gra planszowa M\233ynek}{section.1}% 2
+\BOOKMARK [3][-]{subsubsection.1.1.1}{Skr\363t zasad}{subsection.1.1}% 3
+\BOOKMARK [3][-]{subsubsection.1.1.2}{Fazy rozgrywki}{subsection.1.1}% 4
+\BOOKMARK [3][-]{subsubsection.1.1.3}{Cel rozgrywki}{subsection.1.1}% 5
+\BOOKMARK [3][-]{subsubsection.1.1.4}{Dodatkowe modyfikacje}{subsection.1.1}% 6
+\BOOKMARK [2][-]{subsection.1.2}{Badane algorytmy}{section.1}% 7
+\BOOKMARK [3][-]{subsubsection.1.2.1}{Algorytm min-max}{subsection.1.2}% 8
+\BOOKMARK [3][-]{subsubsection.1.2.2}{Algorytm alfa-beta ciec}{subsection.1.2}% 9
+\BOOKMARK [1][-]{section.2}{Plan pracy}{}% 10
+\BOOKMARK [1][-]{section.3}{Heurystyki oceny stanu planszy}{}% 11
+\BOOKMARK [2][-]{subsection.3.1}{Liczba pionk\363w}{section.3}% 12
+\BOOKMARK [2][-]{subsection.3.2}{Liczba pionk\363w i liczba m\233ynk\363w}{section.3}% 13
+\BOOKMARK [2][-]{subsection.3.3}{Liczba pionk\363w i liczba mozliwych ruch\363w}{section.3}% 14
+\BOOKMARK [1][-]{section.4}{Badania}{}% 15
+\BOOKMARK [1][-]{section.5}{Podsumowanie}{}% 16

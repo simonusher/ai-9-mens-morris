@@ -1,0 +1,60 @@
+\documentclass{article}
+\usepackage{polski}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+
+\hypersetup{%
+	pdfborder = {0 0 0}
+}
+
+\author{Szymon Woźniak, 235040}
+\date{16.05.2019}
+\title{Algorytmy rozwiązywania gier o sumie zerowej}
+
+
+\begin{document}
+	\pagenumbering{gobble}
+	\maketitle
+	\newpage
+	\pagenumbering{arabic}
+	
+	\section{Wstęp teoretyczny}
+	\subsection{Gra planszowa Młynek}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.7\linewidth]{mill_board.png}
+		\caption{Plansza do gry w młynek z kilkoma rozstawionymi pionkami}
+		\label{fig:board}
+	\end{figure}
+	\subsubsection{Skrót zasad}
+	Młynek jest dwuosobową, turową, logiczną grą planszową. W rozpatrywanej wersji, na planszy znajdują się 24 rozmieszczone na 3 koncentrycznych kwadratach pola. Na każdym z tych pól gracze mogą umieszczać swoje pionki. Obaj gracze posiadają po 9 pionków do rozmieszczenia.\\
+	Gracze poprzez odpowiednie rozstawianie swoich pionków, mogą blokować lub zbijać pionki przeciwników. Bicie następuje gdy jeden z graczy ustawi 3 swoje pionki w linię. Może wtedy wybrać jeden z pionków przeciwnika, który zostanie usunięty z planszy.\\
+	\subsubsection{Fazy rozgrywki}
+	Pojedyncza partia młynka składa się z trzech faz.
+	\begin{itemize}
+		\item rozstawianie pionków,
+		\item przesuwanie pionków,
+		\item "latanie".
+	\end{itemize}
+	W pierwszej fazie rozgrywki gracze na zmianę umieszczają po jednym z dostępnych 9 pionków na wolnych polach planszy. Jeżeli któremuś z nich uda się ustawić młynek, może usunąć z planszy wybrany pionek przeciwnika. W rozpatrywanej wersji gry, jest to jedyny moment kiedy gracz może ustawić podwójny młynek.\\
+	W drugiej, podstawowej fazie rozgrywki gracze na zmianę swoje pionki. Mogą wybrać dowolne puste pole połączone linią z polem na którym znajduje się aktualnie pionek.\\
+	Trzecia faza następuje dla każdego gracza osobno, kiedy pozostaną mu tylko 3 pionki. Może on wtedy w swojej turze przemieszczać pionki na dowolne puste miejsca na planszy (stąd angielska nazwa \textit{flying}).
+	\subsubsection{Cel rozgrywki}
+	Celem rozgrywki jest doprowadzenie do sytuacji, w której przeciwnikowi pozostaną tylko 2 pionki, lub nie posiada on żadnego możliwego ruchu.
+	\subsubsection{Dodatkowe modyfikacje}
+	W rozpatrywanej wersji gry stosuje się zasadę, że pionka nie można przesunąć na pole, z którego został przesunięty wcześniej. Tym samym gracze zmuszeni są budować młynki, zamiast korzystać z już istniejących.\\
+	W niektórych wersjach gry stosuje się też zasadę, że gracze mogą zbijać pionki przeciwników tylko pod warunkiem, że nie stoją w młynku. W tej pracy zasada ta nie została zastosowana.
+	\subsection{Badane algorytmy}
+	\subsubsection{Algorytm min-max}
+	\subsubsection{Algorytm alfa-beta cięć}
+	\section{Plan pracy}
+	
+	\section{Heurystyki oceny stanu planszy}
+	\subsection{Liczba pionków}
+	\subsection{Liczba pionków i liczba młynków}
+	\subsection{Liczba pionków i liczba możliwych ruchów}
+	\section{Badania}
+	\section{Podsumowanie}
+\end{document}
