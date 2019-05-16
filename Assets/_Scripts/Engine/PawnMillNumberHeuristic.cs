@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿
 public class PawnMillNumberHeuristic : SimplePawnNumberHeuristic
 {
     private static readonly int DEFAULT_MILL_WEIGHT = 18;
@@ -18,18 +15,6 @@ public class PawnMillNumberHeuristic : SimplePawnNumberHeuristic
             } else
             {
                 evaluation -= DEFAULT_MILL_WEIGHT;
-            }
-        }
-        foreach (Mill mill in gameState.ClosedMills)
-        {
-            PlayerNumber pawnOwner = gameState.CurrentBoard.Fields[mill.MillIndices[0]].PawnPlayerNumber;
-            if (pawnOwner == PlayerNumber.FirstPlayer)
-            {
-                evaluation += CLOSED_MILL_WEIGHT;
-            }
-            else
-            {
-                evaluation -= CLOSED_MILL_WEIGHT;
             }
         }
         return evaluation;

@@ -4724,7 +4724,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: 'Moves: 0
+  m_text: 'Turns: 0
 
 '
   m_isRightToLeft: 0
@@ -15290,7 +15290,7 @@ MonoBehaviour:
   secondPlayerSearchDepthDropdown: {fileID: 2121953129}
   numberOfMovesText: {fileID: 589861886}
   timerText: {fileID: 822077342}
-  numberOfMovesTemplateText: 'Moves: {0}'
+  numberOfMovesTemplateText: 'Turns: {0}'
   timerTemplateText: 'Time[s]: {0}'
   currentMovingPlayerTemplateText: 'Turn: Player {0}'
   currentMovingPlayerText: {fileID: 81030520}

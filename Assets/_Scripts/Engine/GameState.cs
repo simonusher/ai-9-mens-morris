@@ -66,7 +66,6 @@ public class GameState
     }
 
     public HashSet<Mill> ActiveMills { get; private set; }
-    public HashSet<Mill> ClosedMills { get; private set; }
     public int PawnsToRemove { get; set; }
 
     private Field _lastSelectedField = null;
@@ -86,7 +85,14 @@ public class GameState
 
     public Board CurrentBoard { get; }
 
-    public int MovesMade { get; private set; }
+    public int MovesMade {
+        get
+        {
+            return FirstPlayerMovesMade + SecondPlayerMovesMade;
+        }
+    }
+    public int FirstPlayerMovesMade { get; private set; }
+    public int SecondPlayerMovesMade { get; private set; }
 
     public bool GameFinished {
         get
@@ -104,9 +110,9 @@ public class GameState
         WinningPlayer = PlayerNumber.None;
         CurrentMovingPlayer = PlayerNumber.FirstPlayer;
         ActiveMills = new HashSet<Mill>();
-        ClosedMills = new HashSet<Mill>();
         PawnsToRemove = 0;
-        MovesMade = 0;
+        FirstPlayerMovesMade = 0;
+        SecondPlayerMovesMade = 0;
         MovesUntilNow = "";
     }
     
@@ -119,10 +125,10 @@ public class GameState
         WinningPlayer = other.WinningPlayer;
         CurrentMovingPlayer = other.CurrentMovingPlayer;
         ActiveMills = new HashSet<Mill>(other.ActiveMills);
-        ClosedMills = new HashSet<Mill>(other.ClosedMills);
         PawnsToRemove = other.PawnsToRemove;
         LastSelectedField = null;
-        MovesMade = other.MovesMade;
+        FirstPlayerMovesMade = other.FirstPlayerMovesMade;
+        SecondPlayerMovesMade = other.SecondPlayerMovesMade;
         MovesUntilNow = string.Copy(other.MovesUntilNow);
     }
     public void HandleSelection(int fieldIndex)
@@ -202,10 +208,20 @@ public class GameState
         LogMoveMove(CurrentMovingPlayer, LastSelectedField.FieldIndex, newField.FieldIndex);
         LastSelectedField.MoveTo(newField);
         LastSelectedField = null;
-        MovesMade++;
+        IncreaseMovesMade();
         TogglePawnDeletingOrSwitchPlayer();
     }
 
+    private void IncreaseMovesMade()
+    {
+        if(CurrentMovingPlayer == PlayerNumber.FirstPlayer)
+        {
+            FirstPlayerMovesMade++;
+        } else
+        {
+            SecondPlayerMovesMade++;
+        }
+    }
 
     public void HandlePawnRemoval(int fieldIndex)
     {
@@ -229,7 +245,7 @@ public class GameState
         field.Reset();
         LogRemoveMove(CurrentMovingPlayer, field.FieldIndex);
         PawnsToRemove--;
-        MovesMade++;
+        //MovesMade++;
         RecalculateActiveMills();
         if (PawnsToRemove == 0)
         {
@@ -257,7 +273,7 @@ public class GameState
         CurrentBoard.Fields[fieldIndex].PawnPlayerNumber = playerNumber;
         NotePlayerPawnPlacing(playerNumber);
         LogPlaceMove(playerNumber, fieldIndex);
-        MovesMade++;
+        IncreaseMovesMade();
     }
 
     private void TogglePawnDeletingOrSwitchPlayer()
@@ -267,7 +283,6 @@ public class GameState
         {
             PawnsToRemove = millDifference.NewMills.Count;
             ActiveMills = millDifference.TurnActiveMills;
-            ClosedMills = millDifference.NewMills;
         }
         else
         {
@@ -310,7 +325,6 @@ public class GameState
         HashSet<Mill> closedMills = new HashSet<Mill>(newMills);
         closedMills.ExceptWith(ActiveMills);
         ActiveMills = newMills;
-        ClosedMills = closedMills;
     }
     private void RecalculateWinningPlayer()
     {
@@ -359,7 +373,7 @@ public class GameState
         GameState newState = new GameState(this);
         newState.CurrentBoard.GetField(move.FromFieldIndex).MoveTo(newState.CurrentBoard.GetField(move.ToFieldIndex));
         newState.LogMoveMove(CurrentMovingPlayer, move.FromFieldIndex, move.ToFieldIndex);
-        newState.MovesMade++;
+        newState.IncreaseMovesMade();
         newState.TogglePawnDeletingOrSwitchPlayer();
         newState.CheckGameStateChanged();
         return newState;

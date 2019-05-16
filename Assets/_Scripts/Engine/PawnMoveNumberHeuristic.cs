@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿
 public class PawnMoveNumberHeuristic : SimplePawnNumberHeuristic
 {
     private static readonly int DEFAULT_MOVE_WEIGHT = 5;

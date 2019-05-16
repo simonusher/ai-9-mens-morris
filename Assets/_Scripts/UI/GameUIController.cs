@@ -29,7 +29,7 @@ public class GameUIController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI numberOfMovesText = null;
     [SerializeField] private TextMeshProUGUI timerText = null;
 
-    [SerializeField] private string numberOfMovesTemplateText = "Moves: {0}";
+    [SerializeField] private string numberOfMovesTemplateText = "Turns: {0}";
     [SerializeField] private string timerTemplateText = "Time[s]: {0}";
     [SerializeField] private string currentMovingPlayerTemplateText = "Turn: Player {0}";
     [SerializeField] private TextMeshProUGUI currentMovingPlayerText = null;
@@ -56,6 +56,8 @@ public class GameUIController : MonoBehaviour
 
     private float timePassed;
     private bool shouldLogToFile;
+    private string firstPlayerType;
+    private string secondPlayerType;
 
     static GameUIController()
     {
@@ -151,19 +153,36 @@ public class GameUIController : MonoBehaviour
             int searchDepth = searchDepthDropdown.value + 1;
             if(algorithmDropdown.value == MIN_MAX_DROPDOWN_NUMBER)
             {
+                SavePlayerType(playerNumber, "MinMax: " + heuristic.GetType().Name);
                 return new MinMaxAiPlayer(gameEngine, heuristic, playerNumber, searchDepth);
             }
             else if(algorithmDropdown.value == ALPHA_BETA_DROPDOWN_NUMBER)
             {
+                SavePlayerType(playerNumber, "AlfaBeta: " + heuristic.GetType().Name);
                 return new AlphaBetaAiPlayer(gameEngine, heuristic, playerNumber, searchDepth);
             }
             else
             {
+                SavePlayerType(playerNumber, "FastAlfaBeta: " + heuristic.GetType().Name);
                 Heuristic sortHeuristic = new SimplePawnNumberHeuristic();
                 return new FastAlphaBetaAiPlayer(gameEngine, heuristic, playerNumber, searchDepth, sortHeuristic);
             }
+        } else
+        {
+            SavePlayerType(playerNumber, "Human");
         }
         return null;
+    }
+
+    private void SavePlayerType(PlayerNumber playerNumber, string type)
+    {
+        if(playerNumber == PlayerNumber.FirstPlayer)
+        {
+            firstPlayerType = type;
+        } else
+        {
+            secondPlayerType = type;
+        }
     }
 
     private void OnBoardUpdated(Board newBoard)
@@ -222,9 +241,23 @@ public class GameUIController : MonoBehaviour
         if (shouldLogToFile)
         {
             string moves = gameEngine.GameState.MovesUntilNow;
+            string gameLog = firstPlayerType + " vs. " + secondPlayerType + "\n";
+            gameLog += "Won: " + (gameEngine.GameState.WinningPlayer == PlayerNumber.FirstPlayer ? "White" : "Black") + "\n";
+            float firstPlayerTime = aiPlayersController.firstPlayerDecisionTimeMillis / 1000f;
+            float secondPlayerTime = aiPlayersController.firstPlayerDecisionTimeMillis / 1000f;
+            if(firstPlayerTime == 0)
+            {
+                firstPlayerTime = timePassed - (secondPlayerTime / (1000f));
+            }
+            gameLog += "White moves: " + gameEngine.GameState.FirstPlayerMovesMade + "\n";
+            gameLog += "Black moves: " + gameEngine.GameState.SecondPlayerMovesMade + "\n";
+            gameLog += "White time: " + firstPlayerTime + "\n";
+            gameLog += "Black time: " + secondPlayerTime + "\n";
+            gameLog += "Moves: \n";
+            gameLog += moves;
             try
             {
-                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"\" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".txt", moves);
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + @"\" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".txt", gameLog);
             } catch (Exception e)
             {
 

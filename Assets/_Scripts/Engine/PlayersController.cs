@@ -1,11 +1,14 @@
 ﻿using System.Diagnostics;
 public class PlayersController
 {
-    private AiPlayer firstAiPlayer;
-    private AiPlayer secondAiPlayer;
+    public AiPlayer firstAiPlayer;
+    public AiPlayer secondAiPlayer;
     private bool gameEngineReady;
     private PlayerNumber currentPlayerTurn;
     private Stopwatch stopWatch;
+
+    public long firstPlayerDecisionTimeMillis = 0;
+    public long secondPlayerDecisionTimeMillis = 0;
 
     public PlayersController(AiPlayer firstAiPlayer = null, AiPlayer secondAiPlayer = null)
     {
@@ -19,17 +22,18 @@ public class PlayersController
     {
         if (gameEngineReady)
         {
-            stopWatch = Stopwatch.StartNew();
             if(currentPlayerTurn == PlayerNumber.FirstPlayer)
             {
-                HandleAiMove(firstAiPlayer);
+                long time = HandleAiMove(firstAiPlayer);
+                firstPlayerDecisionTimeMillis += time;
+                return time;
             }
             else
             {
-                HandleAiMove(secondAiPlayer);
+                long time = HandleAiMove(firstAiPlayer);
+                secondPlayerDecisionTimeMillis += time;
+                return HandleAiMove(secondAiPlayer);
             }
-            stopWatch.Stop();
-            return stopWatch.ElapsedMilliseconds;
         } else
         {
             return 0;
@@ -42,12 +46,16 @@ public class PlayersController
         this.gameEngineReady = true;
     }
 
-    private void HandleAiMove(AiPlayer player)
+    private long HandleAiMove(AiPlayer player)
     {
         gameEngineReady = false;
         if(player != null)
         {
+            stopWatch = Stopwatch.StartNew();
             player.MakeMove();
+            stopWatch.Stop();
+            return stopWatch.ElapsedMilliseconds;
         }
+        return 0;
     }
 }
