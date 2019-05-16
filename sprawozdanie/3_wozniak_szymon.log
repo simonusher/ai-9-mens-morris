@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6930 64-bit) (preloaded format=pdflatex 2019.1.25)  16 MAY 2019 21:47
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6930 64-bit) (preloaded format=pdflatex 2019.1.25)  16 MAY 2019 23:47
 entering extended mode
 **./3_wozniak_szymon.tex
 (3_wozniak_szymon.tex
@@ -288,40 +288,72 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \float@box=\box29
 \@float@everytoks=\toks21
 \@floatcapt=\box30
+)
+("C:\Users\Szymon\AppData\Local\Programs\MiKTeX 2.9\tex/latex/algorithmicx\algp
+seudocode.sty"
+Package: algpseudocode 
+
+("C:\Users\Szymon\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\ifthen.sty"
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+("C:\Users\Szymon\AppData\Local\Programs\MiKTeX 2.9\tex/latex/algorithmicx\algo
+rithmicx.sty"
+Package: algorithmicx 2005/04/27 v1.2 Algorithmicx
+
+Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
+\c@ALG@line=\count111
+\c@ALG@rem=\count112
+\c@ALG@nested=\count113
+\ALG@tlm=\skip47
+\ALG@thistlm=\skip48
+\c@ALG@Lnr=\count114
+\c@ALG@blocknr=\count115
+\c@ALG@storecount=\count116
+\c@ALG@tmpcounter=\count117
+\ALG@tmplength=\skip49
+)
+Document Style - pseudocode environments for use with the `algorithmicx' style
+)
+("C:\Users\Szymon\AppData\Local\Programs\MiKTeX 2.9\tex/latex/algorithms\algori
+thm.sty"
+Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
+nment
+\@float@every@algorithm=\toks22
+\c@algorithm=\count118
 ) (3_wozniak_szymon.aux)
 \openout1 = `3_wozniak_szymon.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OT4/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OT4/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
 
 ("C:\Users\Szymon\AppData\Local\Programs\MiKTeX 2.9\tex/context/base\supp-pdf.m
 kii"
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count111
+\scratchcounter=\count119
 \scratchdimen=\dimen118
 \scratchbox=\box31
-\nofMPsegments=\count112
-\nofMParguments=\count113
-\everyMPshowfont=\toks22
-\MPscratchCnt=\count114
+\nofMPsegments=\count120
+\nofMParguments=\count121
+\everyMPshowfont=\toks23
+\MPscratchCnt=\count122
 \MPscratchDim=\dimen119
-\MPnumerator=\count115
-\makeMPintoPDFobject=\count116
-\everyMPtoPDFconversion=\toks23
+\MPnumerator=\count123
+\makeMPintoPDFobject=\count124
+\everyMPtoPDFconversion=\toks24
 )
 ("C:\Users\Szymon\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\epstopdf
 -base.sty"
@@ -339,7 +371,7 @@ G,.JBIG2,.JB2,.eps]
 (grfext)             \AppendGraphicsExtensions on input line 456.
 )
 \AtBeginShipoutBox=\box32
-Package hyperref Info: Link coloring OFF on input line 16.
+Package hyperref Info: Link coloring OFF on input line 18.
 
 ("C:\Users\Szymon\AppData\Local\Programs\MiKTeX 2.9\tex/latex/hyperref\nameref.
 sty"
@@ -349,28 +381,28 @@ Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
 lestring.sty"
 Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
-\c@section@level=\count117
+\c@section@level=\count125
 )
-LaTeX Info: Redefining \ref on input line 16.
-LaTeX Info: Redefining \pageref on input line 16.
-LaTeX Info: Redefining \nameref on input line 16.
+LaTeX Info: Redefining \ref on input line 18.
+LaTeX Info: Redefining \pageref on input line 18.
+LaTeX Info: Redefining \nameref on input line 18.
  (3_wozniak_szymon.out) (3_wozniak_szymon.out)
 \@outlinefile=\write3
 \openout3 = `3_wozniak_szymon.out'.
 
-LaTeX Font Info:    Try loading font information for OML+plm on input line 19.
+LaTeX Font Info:    Try loading font information for OML+plm on input line 21.
 
 ("C:\Users\Szymon\AppData\Local\Programs\MiKTeX 2.9\tex/latex/polski\omlplm.fd"
 File: omlplm.fd 2008/02/24 v1.2.1 Font defs for fonts PL (MW)
 )
-LaTeX Font Info:    Try loading font information for OMS+plsy on input line 19.
+LaTeX Font Info:    Try loading font information for OMS+plsy on input line 21.
 
 
 ("C:\Users\Szymon\AppData\Local\Programs\MiKTeX 2.9\tex/latex/polski\omsplsy.fd
 "
 File: omsplsy.fd 2008/02/24 v1.2.1 Font defs for fonts PL (MW)
 )
-LaTeX Font Info:    Try loading font information for OMX+plex on input line 19.
+LaTeX Font Info:    Try loading font information for OMX+plex on input line 21.
 
 
 ("C:\Users\Szymon\AppData\Local\Programs\MiKTeX 2.9\tex/latex/polski\omxplex.fd
@@ -378,69 +410,98 @@ LaTeX Font Info:    Try loading font information for OMX+plex on input line 19.
 File: omxplex.fd 2008/02/24 v1.2.1 Font defs for fonts PL (MW)
 )
 LaTeX Font Info:    External font `plex10' loaded for size
-(Font)              <12> on input line 19.
+(Font)              <12> on input line 21.
 LaTeX Font Info:    External font `plex10' loaded for size
-(Font)              <8> on input line 19.
+(Font)              <8> on input line 21.
 LaTeX Font Info:    External font `plex10' loaded for size
-(Font)              <6> on input line 19.
+(Font)              <6> on input line 21.
  [1
 
 {C:/Users/Szymon/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
-<mill_board.png, id=74, 813.0375pt x 811.53188pt>
+<mill_board.png, id=82, 813.0375pt x 811.53188pt>
 File: mill_board.png Graphic file (type png)
 <use mill_board.png>
-Package pdftex.def Info: mill_board.png  used on input line 26.
+Package pdftex.def Info: mill_board.png  used on input line 28.
 (pdftex.def)             Requested size: 241.49895pt x 241.04675pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 31--33
+Underfull \hbox (badness 10000) in paragraph at lines 33--35
 
  []
 
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 36.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 38.
 ("C:\Users\Szymon\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\omscmr.fd"
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 36.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 38.
 
 [1pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) 
 has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.39 	\end{itemize}
+l.41 	\end{itemize}
                     <./mill_board.png>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 59.
+<tree.jpg, id=92, 451.6875pt x 354.57469pt>
+File: tree.jpg Graphic file (type jpg)
+<use tree.jpg>
+Package pdftex.def Info: tree.jpg  used on input line 53.
+(pdftex.def)             Requested size: 241.49895pt x 189.57925pt.
  [2]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 59.
- (3_wozniak_szymon.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 59.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 59.
+LaTeX Font Info:    External font `plex10' loaded for size
+(Font)              <10> on input line 61.
+LaTeX Font Info:    External font `plex10' loaded for size
+(Font)              <7> on input line 61.
+LaTeX Font Info:    External font `plex10' loaded for size
+(Font)              <5> on input line 61.
+Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
+put line 65.
+ [3pdfTeX warning (ext4): destination with the same identifier (name{figure.2})
+ has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.92 	\subsubsection
+                    {Algorytm alfa-beta cięć} <./tree.jpg>] [4]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 140.
+ [5] [6]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 140.
+
+(3_wozniak_szymon.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 140.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 140.
 Package rerunfilecheck Info: File `3_wozniak_szymon.out' has not changed.
-(rerunfilecheck)             Checksum: 0D813534BE6ABA573DE368723DBF7C57;1116.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 59.
+(rerunfilecheck)             Checksum: C6B55623B482E36F9261AE3DDF0A7033;1227.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 140.
  ) 
 Here is how much of TeX's memory you used:
- 5908 strings out of 492946
- 87620 string characters out of 3125822
- 177995 words of memory out of 3000000
- 9729 multiletter control sequences out of 15000+200000
- 10866 words of font info for 31 fonts, out of 3000000 for 9000
+ 6530 strings out of 492946
+ 96664 string characters out of 3125822
+ 193704 words of memory out of 3000000
+ 10318 multiletter control sequences out of 15000+200000
+ 15352 words of font info for 42 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 28i,6n,28p,359b,384s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:/Users/Szymon/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/pl/plit.en
+ 28i,6n,28p,611b,384s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Users/Szymon/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/pl/plms.en
+c}{C:/Users/Szymon/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/pl/plsc.en
 c}{C:/Users/Szymon/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/pl/plrm.en
+c}{C:/Users/Szymon/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/pl/plmi.en
+c}{C:/Users/Szymon/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/pl/plit.en
 c}<C:/Users/Szymon/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfont
 s/cm/cmsy10.pfb><C:/Users/Szymon/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/
 public/pl/plbx10.pfb><C:/Users/Szymon/AppData/Local/Programs/MiKTeX 2.9/fonts/t
 ype1/public/pl/plbx12.pfb><C:/Users/Szymon/AppData/Local/Programs/MiKTeX 2.9/fo
-nts/type1/public/pl/plr10.pfb><C:/Users/Szymon/AppData/Local/Programs/MiKTeX 2.
-9/fonts/type1/public/pl/plr12.pfb><C:/Users/Szymon/AppData/Local/Programs/MiKTe
-X 2.9/fonts/type1/public/pl/plr17.pfb><C:/Users/Szymon/AppData/Local/Programs/M
-iKTeX 2.9/fonts/type1/public/pl/plti10.pfb>
-Output written on 3_wozniak_szymon.pdf (3 pages, 102479 bytes).
+nts/type1/public/pl/plcsc10.pfb><C:/Users/Szymon/AppData/Local/Programs/MiKTeX 
+2.9/fonts/type1/public/pl/plmi10.pfb><C:/Users/Szymon/AppData/Local/Programs/Mi
+KTeX 2.9/fonts/type1/public/pl/plr10.pfb><C:/Users/Szymon/AppData/Local/Program
+s/MiKTeX 2.9/fonts/type1/public/pl/plr12.pfb><C:/Users/Szymon/AppData/Local/Pro
+grams/MiKTeX 2.9/fonts/type1/public/pl/plr17.pfb><C:/Users/Szymon/AppData/Local
+/Programs/MiKTeX 2.9/fonts/type1/public/pl/plr8.pfb><C:/Users/Szymon/AppData/Lo
+cal/Programs/MiKTeX 2.9/fonts/type1/public/pl/plsy10.pfb><C:/Users/Szymon/AppDa
+ta/Local/Programs/MiKTeX 2.9/fonts/type1/public/pl/plti10.pfb>
+Output written on 3_wozniak_szymon.pdf (7 pages, 212214 bytes).
 PDF statistics:
- 120 PDF objects out of 1000 (max. 8388607)
- 21 named destinations out of 1000 (max. 500000)
- 134 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 171 PDF objects out of 1000 (max. 8388607)
+ 30 named destinations out of 1000 (max. 500000)
+ 155 words of extra memory for PDF output out of 10000 (max. 10000000)
 

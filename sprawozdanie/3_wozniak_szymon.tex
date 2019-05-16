@@ -4,7 +4,8 @@
 \usepackage{amsmath}
 \usepackage{hyperref}
 \usepackage{float}
-
+\usepackage{algpseudocode}
+\usepackage{algorithm}
 \hypersetup{%
 	pdfborder = {0 0 0}
 }
@@ -46,11 +47,90 @@
 	\subsubsection{Dodatkowe modyfikacje}
 	W rozpatrywanej wersji gry stosuje się zasadę, że pionka nie można przesunąć na pole, z którego został przesunięty wcześniej. Tym samym gracze zmuszeni są budować młynki, zamiast korzystać z już istniejących.\\
 	W niektórych wersjach gry stosuje się też zasadę, że gracze mogą zbijać pionki przeciwników tylko pod warunkiem, że nie stoją w młynku. W tej pracy zasada ta nie została zastosowana.
+	\subsection{Drzewo gry}\label{sub:tree}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.7\linewidth]{tree.jpg}
+		\caption{Przykładowy fragment drzewa dla gry kółko i krzyżyk}
+		\label{fig:game_tree}
+	\end{figure}
+	Drzewo gry jest grafem skierowanym, w którym każdy z węzłów reprezentuje stan rozgrywki w danym momencie. Z każdego stanu, w którym gra jeszcze się nie skończyła, można wygenerować zbiór następnych stanów gry reprezentujących różne możliwe decyzje aktualnie ruszającego się gracza. Następnie z każdego z tych stanów można wygenerować ruchy przeciwnika itd.\\
+	Jak widać już na przykładzie kółka i krzyżyk, drzewo to rozrasta się bardzo szybko i w większości gier nie jest ono możliwe do zbudowanie i przejrzenia w całości.
 	\subsection{Badane algorytmy}
+	Rozpatrywane algorytmy przeglądają fragmenty operują na wspomnianym w sekcji \ref{sub:tree} drzewie gry. Przeglądając jego fragment, estymują jakość możliwych do podjęcia decyzji, oceniając stan rozgrywki kilka ruchów dalej.
+	Oba korzystają w tym celu z pewnej heurystycznej funkcji, oznaczanej dalej jako $heuristic$, do statycznej ewaluacji stanu rozgrywki.
 	\subsubsection{Algorytm min-max}
+	Algorytm min-max przegląda drzewo gry do pewnej zadanej głębokości $depth$, na zmianę wybierając odpowiednio stan oceniany jako najlepszy i jako najgorszy przez funkcję $heuristic$. Reprezentuje to podejmowanie możliwie najlepszych decyzji zarówno przez siebie jak i przez przeciwnika. Jego działanie przedstawia poniższy pseudokod.
+	\begin{algorithm}[H]
+		\caption{Algorytm Min-Max}
+		\label{alg:minmax}
+		\begin{algorithmic}[1]
+			\Function{MinMax}{$state, depth, maximizing$}
+				\If{game finished in $state$ or $depth = 0$}
+					\State \Return \Call{heuristic}{$state$}
+				\EndIf
+				\If{$maximizing$}
+					\State $maxEval \gets -\infty$
+					\State $childStates \gets \Call{getAllNextStates}{state}$
+					\For{$child$ in $childStates$}
+						\State $eval \gets \Call{MinMax}{child, depth-1, false}$
+						\State $maxEval \gets \Call{max}{maxEval, eval}$
+					\EndFor
+					\State \Return $maxEval$
+				\Else
+					\State $minEval \gets \infty$
+					\State $childStates \gets \Call{getAllNextStates}{state}$
+					\For{$child$ in $childStates$}
+						\State $eval \gets \Call{MinMax}{child, depth-1, true}$
+						\State $minEval \gets \Call{min}{minEval, eval}$
+					\EndFor
+					\State \Return $minEval$
+				\EndIf
+			\EndFunction
+		\end{algorithmic}
+	\end{algorithm}
 	\subsubsection{Algorytm alfa-beta cięć}
+	Algorytm alfa-beta cięć jest usprawnieniem algorytmu min-max. Przeglądając kolejne stany wgłąb drzewa podejmuje on decyzje czy rozpatrywana gałąź jest warta rozwijania. Jeżeli w dowolnym momencie nie istnieje możliwość znalezienia lepszego stanu na pewnym poziomie drzewa, algorytm nie przegląda kolejnych stanów. Pozwala to zaoszczędzić czas pracy procesora i potencjalnie przeglądać drzewo na większą głębokość w takim samym czasie jak algorytm min-max dla mniejszych głębokości. Jego działanie zostało przedstawione na poniższym pseudokodzie.
+	\begin{algorithm}[H]
+		\caption{Algorytm Alfa-Beta}
+		\label{alg-alphabeta}
+		\begin{algorithmic}[1]
+			\Function{AlfaBeta}{$state, depth, maximizing, \alpha, \beta$}
+				\If{game finished in $state$ or $depth = 0$}
+					\State \Return \Call{heuristic}{$state$}
+				\EndIf
+				\If{$maximizing$}
+					\State $maxEval \gets -\infty$
+					\State $childStates \gets \Call{getAllNextStates}{state}$
+					\For{$child$ in $childStates$}
+						\State $eval \gets \Call{AlfaBeta}{child, depth-1, false, \alpha, \beta}$
+						\State $maxEval \gets \Call{max}{maxEval, eval}$
+						\State $\alpha \gets \Call{max}{\alpha, eval}$
+						\If{$\alpha \geq \beta$}
+							\State \textbf{break}
+						\EndIf
+					\EndFor
+					\State \Return $maxEval$
+				\Else
+					\State $minEval \gets \infty$
+					\State $childStates \gets \Call{getAllNextStates}{state}$
+					\For{$child$ in $childStates$}
+						\State $eval \gets \Call{AlfaBeta}{child, depth-1, true, \alpha, \beta}$
+						\State $minEval \gets \Call{min}{minEval, eval}$
+						\State $\beta \gets \Call{min}{\beta, eval}$
+						\If{$\alpha \geq \beta$}
+							\State \textbf{break}
+						\EndIf
+					\EndFor
+					\State \Return $minEval$
+				\EndIf
+			\EndFunction
+		\end{algorithmic}
+	\end{algorithm}
 	\section{Plan pracy}
-	
+	W pierwszej kolejności gra młynek zostanie zaimplementowana w wybranym języku programowania i środowisku programistycznym. Implementacja będzie zawierać silnik gry pozwalający na grę zarówno graczy ludzkich jak i kierowanych przez algorytmy sztucznej inteligencji. Będzie również posiadać interfejs graficzny ułatwiający rozgrywkę i umożliwiający obserwowanie rozgrywek SI graczom ludzkim. W silniku gry zostaną również zaimplementowane algorytmy min-max i alfa-beta oraz różne heurystyki oceny stanu planszy.\\
+	Następnie przeprowadzone zostaną badania zaimplementownych rozwiązań.
+	\section{Implementacja}
 	\section{Heurystyki oceny stanu planszy}
 	\subsection{Liczba pionków}
 	\subsection{Liczba pionków i liczba młynków}
