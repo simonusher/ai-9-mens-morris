@@ -244,7 +244,7 @@ public class GameUIController : MonoBehaviour
             string gameLog = firstPlayerType + " vs. " + secondPlayerType + "\n";
             gameLog += "Won: " + (gameEngine.GameState.WinningPlayer == PlayerNumber.FirstPlayer ? "White" : "Black") + "\n";
             float firstPlayerTime = aiPlayersController.firstPlayerDecisionTimeMillis / 1000f;
-            float secondPlayerTime = aiPlayersController.firstPlayerDecisionTimeMillis / 1000f;
+            float secondPlayerTime = aiPlayersController.secondPlayerDecisionTimeMillis / 1000f;
             if(firstPlayerTime == 0)
             {
                 firstPlayerTime = timePassed - (secondPlayerTime / (1000f));

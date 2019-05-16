@@ -30,9 +30,9 @@ public class PlayersController
             }
             else
             {
-                long time = HandleAiMove(firstAiPlayer);
+                long time = HandleAiMove(secondAiPlayer);
                 secondPlayerDecisionTimeMillis += time;
-                return HandleAiMove(secondAiPlayer);
+                return time;
             }
         } else
         {
