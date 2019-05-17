@@ -15,4 +15,8 @@
 \BOOKMARK [2][-]{subsection.4.2}{Liczba pionk\363w i liczba m\233ynk\363w}{section.4}% 15
 \BOOKMARK [2][-]{subsection.4.3}{Liczba pionk\363w i liczba mozliwych ruch\363w}{section.4}% 16
 \BOOKMARK [1][-]{section.5}{Badania}{}% 17
-\BOOKMARK [1][-]{section.6}{Podsumowanie}{}% 18
+\BOOKMARK [2][-]{subsection.5.1}{Por\363wnanie czas\363w przetwarzania i liczby instrukcji algorytm\363w min-max i alfa-beta}{section.5}% 18
+\BOOKMARK [2][-]{subsection.5.2}{Por\363wnanie heurystyk oceny stanu planszy}{section.5}% 19
+\BOOKMARK [2][-]{subsection.5.3}{Wp\233yw heurystyki wyboru kolejnosci wez\233\363w}{section.5}% 20
+\BOOKMARK [1][-]{section.6}{Profilowanie kodu}{}% 21
+\BOOKMARK [1][-]{section.7}{Podsumowanie}{}% 22

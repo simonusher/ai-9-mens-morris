@@ -27,7 +27,7 @@ public class MinMaxAiPlayer : AiPlayer
         this.searchDepth = searchDepth * 2;
     }
 
-    public void MakeMove()
+    public override void MakeMove()
     {
         GameTreeNode bestPossibleMove = null;
         GameState currentState = game.GameState;
@@ -44,6 +44,7 @@ public class MinMaxAiPlayer : AiPlayer
 
     private GameTreeNode MinMax(GameState currentState, int depth, bool maximizingPlayer)
     {
+        visitedNodes++;
         GameTreeNode bestMove = null;
         if (depth == 0 || currentState.WinningPlayer != PlayerNumber.None)
         {

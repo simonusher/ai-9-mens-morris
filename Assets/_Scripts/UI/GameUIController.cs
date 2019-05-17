@@ -253,6 +253,14 @@ public class GameUIController : MonoBehaviour
             gameLog += "Black moves: " + gameEngine.GameState.SecondPlayerMovesMade + "\n";
             gameLog += "White time: " + firstPlayerTime + "\n";
             gameLog += "Black time: " + secondPlayerTime + "\n";
+            if (aiPlayersController.firstAiPlayer != null)
+            {
+                gameLog += "White visited nodes: " + aiPlayersController.firstAiPlayer.visitedNodes + "\n";
+            }
+            if (aiPlayersController.secondAiPlayer != null)
+            {
+                gameLog += "Black visited nodes: " + aiPlayersController.secondAiPlayer.visitedNodes + "\n";
+            }
             gameLog += "Moves: \n";
             gameLog += moves;
             try

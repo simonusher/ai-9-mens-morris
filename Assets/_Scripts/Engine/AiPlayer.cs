@@ -1,4 +1,5 @@
-﻿public interface AiPlayer
+﻿public abstract class AiPlayer
 {
-    void MakeMove();
+    public int visitedNodes = 0;
+    public abstract void MakeMove();
 }

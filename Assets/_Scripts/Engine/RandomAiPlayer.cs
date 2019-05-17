@@ -15,8 +15,9 @@ public class RandomAiPlayer : AiPlayer
         randomGenerator = new Random();
     }
 
-    public void MakeMove()
+    public override void MakeMove()
     {
+        visitedNodes++;
         List<GameState> possibleMoves = gameEngine.GameState.GetAllPossibleNextStates(myPlayerNumber);
         int numberOfPossibleMoves = possibleMoves.Count;
         if(numberOfPossibleMoves == 0)

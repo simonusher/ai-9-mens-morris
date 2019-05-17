@@ -129,12 +129,147 @@
 	\end{algorithm}
 	\section{Plan pracy}
 	W pierwszej kolejności gra młynek zostanie zaimplementowana w wybranym języku programowania i środowisku programistycznym. Implementacja będzie zawierać silnik gry pozwalający na grę zarówno graczy ludzkich jak i kierowanych przez algorytmy sztucznej inteligencji. Będzie również posiadać interfejs graficzny ułatwiający rozgrywkę i umożliwiający obserwowanie rozgrywek SI graczom ludzkim. W silniku gry zostaną również zaimplementowane algorytmy min-max i alfa-beta oraz różne heurystyki oceny stanu planszy.\\
-	Następnie przeprowadzone zostaną badania zaimplementownych rozwiązań.
+	Następnie przeprowadzone zostaną badania zaimplementownych rozwiązań. W pierwszej kolejności zostanie przeprowadzone badanie porównawcze czasów przetwarzania i liczby przeglądanych węzłów drzewa gry dla algorytmów min-max i alfa-beta.\\
+	Jako drugie zostanie przeprowadzone badanie wpływu zastosowania heurystyki wyboru kolejności węzłów na czas przetwarzania, liczbę ruchów i przeglądanych węzłów drzewa gry dla algorytmu alfa-beta.\\
+	Wszystkie badania zostaną przeprowadzone na wersji z interfejsem graficznym.
 	\section{Implementacja}
+	Implementacja gry została przeprowadzona przy pomocy silnika Unity w technologiach .NET i C\#. Całość implementacji została przystosowana do uruchamiania w trybie bez interfejsu graficznego. Zrzuty ekranu z wybranych fragmentów rozgrywki zostały przedstawione \ref{fig:gui1} i \ref{fig:gui2}.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.75\linewidth]{gui1.png}
+		\caption{Interfejs graficzny po zakończeniu rozgrywki pomiędzy graczami sterowanymi przez SI}
+		\label{fig:gui1}
+	\end{figure}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.75\linewidth]{gui2.png}
+		\caption{Interfejs graficzny w rozgrywce pomiędzy graczami ludzkimi}
+		\label{fig:gui2}
+	\end{figure}
 	\section{Heurystyki oceny stanu planszy}
+	Do przybliżania oceny stanu planszy przez algorytmy należy zaproponować heurystyki, w których zakodowana jest specyficzna wiedza dla rozpatrywanego problemu. W tej pracy rozpatrzone zostaną 3 różne heurystyki. Dużą wartością funkcji oznaczony jest fakt, że plansza jest dobra dla gracza białego, natomiast małą że plansza jest dobra dla gracza czarnego.
 	\subsection{Liczba pionków}
+	Ta heurystyka ocenia liczbę pionków gracza i przeciwnika na planszy. Powinna faworyzować ruchy prowadzące do ustawiania młynków i tym samym bicia pionków przeciwnika, oraz ruchy blokujące ustawienie młynka przez oponenta, ponieważ prowadzą do utraty własnego pionka. Dodatkowo dodawana lub odejmowana jest wartość o dużej wadze, jeżeli gra została wygrana przez jednego z graczy. Przedstawia ją następujące równanie:
+	\begin{equation}
+		PAWN(state) = a \cdot (p_{w}(state) - p_{b}(state)) + b \cdot win(state)
+	\end{equation}
+	, gdzie: 
+	\begin{itemize}
+		\item $a$ - waga dla liczby pionków,
+		\item $p_w$ - liczba pionków gracza białego,
+		\item $p_b$ - liczba pionków gracza czarnego,
+		\item $b$ - waga dla wygranej,
+		\item $win$ - wartość 1, -1 lub 0 w zależności od tego czy wygrał gracz biały, czarny lub gra się nie skończyła.
+	\end{itemize}
+	W tej pracy użyte zostały współczynniki $a = 1086$ i $b = 9$.
 	\subsection{Liczba pionków i liczba młynków}
+	Ta heurystyka różni się od poprzedniej tym, że kładzie dodatkowy nacisk na ustawianie młynków na planszy. Jest sformułowana następująco:
+	\begin{equation}
+		MILL(state) = PAWN(state) + c \cdot (mill_w(state) - mill_b(state))
+	\end{equation}
+	, gdzie:
+	\begin{itemize}
+		\item $c$ - waga dla ustawionych młynków,
+		\item $mill_w$ - liczba młynków gracza białego,
+		\item $mill_b$ - liczba młynków gracza czarnego.
+	\end{itemize}
 	\subsection{Liczba pionków i liczba możliwych ruchów}
+	Ta heurystyka jest modyfikacją pierwszej. Kładzie dodatkowy nacisk na liczbę możliwych ruchów, które mogą wykonać gracze. Powinno to promować ruchy prowadzące do wygranej poprzez zablokowanie przeciwnika. Można ją można zdefiniować następująco:
+	\begin{equation}
+	MOVE(state) = PAWN(state) + c \cdot (move_w(state) - move_b(state))
+	\end{equation}
+	, gdzie:
+	\begin{itemize}
+		\item $c$ - waga dla liczby ruchów,
+		\item $move_w$ - liczba dostępnych ruchów gracza białego,
+		\item $move_b$ - liczba dostępnych ruchów gracza czarnego.
+	\end{itemize}
 	\section{Badania}
+	\subsection{Porównanie czasów przetwarzania i liczby instrukcji algorytmów min-max i alfa-beta}
+	Badanie zostanie przeprowadzone dla jednego ustalonego przeciwnika - algorytmu alfa-beta z głębokością 2 i heurystyką oceniającą liczbę pionków na planszy. Przeciwko niemu zostanie na zmianę postawiony algorytm min-max i alfa-beta. Tym samym będą one przeglądały te same drzewa gry, a wyniki będą bezpośrednio przedstawiać wydajność obu algorytmów. Zarówno czas przetwarzania jak i liczba przeglądanych węzłów zostaną zsumowane z całego przebiegu rozgrywki.
+	\begin{table}[H]
+		\label{tab:comparison}
+		\caption{Wyniki porównania liczby przeglądanych węzłów i czasów przetwarzania dla różnych głębokości drzewa gry}
+		\begin{tabular}{|r|r|r|r|r|}
+			\hline
+			\multicolumn{1}{|c|}{\textbf{Algorytm}}      & \multicolumn{2}{c|}{\textbf{Min-max}}                                                   & \multicolumn{2}{c|}{\textbf{Alfa-beta}}                                                 \\ \hline
+			\multicolumn{1}{|c|}{\textbf{Poziom drzewa}} & \multicolumn{1}{c|}{\textbf{Czas{[}s{]}}} & \multicolumn{1}{c|}{\textbf{Liczba węzłów}} & \multicolumn{1}{c|}{\textbf{Czas{[}s{]}}} & \multicolumn{1}{c|}{\textbf{Liczba węzłów}} \\ \hline
+			1                                            & 0,025                                     & 3408                                        & 0,018                                     & 874                                         \\ \hline
+			2                                            & 4,797                                     & 949030                                      & 0,614                                     & 27492                                       \\ \hline
+			3                                            & n/a                                       & n/a                                         & 23,004                                    & 911337                                      \\ \hline
+		\end{tabular}
+	\end{table}
+	\paragraph{Wnioski}
+	W tabeli \ref{tab:comparison} widać dobrze przewagę algorytmu alfa-beta nad min-max. Ten pierwszy jest w stanie podejmować te same decyzje co min-max przeglądając dużo mniejszą część drzewa gry, tym samym oszczędzając moc obliczeniową i czas. Pozwala to potencjalnie przeglądać drzewa do większej głębokości co może skutkować podejmowaniem lepszych decyzji.
+	
+	\subsection{Porównanie heurystyk oceny stanu planszy}
+	Badanie zostanie przeprowadzone przy użyciu algorytmu alfa-beta i ustalonej głębokości drzewa gry - 2. Zestawione zostaną wszystkie zaimplementowane heurystyki.
+	\begin{table}[H]
+		\centering
+		\label{tab:heuristics2}
+		\caption{Wyniki rozgrywek pomiędzy zaimplementowanymi heurystykami dla głębokości drzewa gry równej 2}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			\textbf{P1/P2} & \textbf{PAWN} & \textbf{MILL} & \textbf{MOVE} \\ \hline
+			\textbf{PAWN}  & X             & P1(63)        & P2(52)        \\ \hline
+			\textbf{MILL}  & P1(77)        & X             & P1(49)        \\ \hline
+			\textbf{MOVE}  & P1(31)        & P1(31)        & X            \\ \hline
+		\end{tabular}
+	\end{table}
+	W tabeli \ref{tab:heuristics2} widać, że najlepiej w rozgrywkach radzą sobie heurystyki MILL i MOVE. Ta druga radzi sobie wyjątkowo dobrze, gdy kontroluje pionki gracza rozpoczynającego rozpoczynającego rozgrywkę. Aby lepiej przeanalizować różnice między nimi zostało przeprowadzone badanie dla głębokości drzewa gry równej 3.
+	\begin{table}[H]
+		\centering
+		\label{tab:heuristics3}
+		\caption{Wyniki rozgrywek pomiędzy heurystykami MOVE i MILL dla głębokości drzewa gry równej 3}
+		\begin{tabular}{|c|c|c|}
+			\hline
+			\textbf{P1/P2} & \textbf{MOVE} & \textbf{MILL} \\ \hline
+			\textbf{MOVE}  & X             & P1(21)        \\ \hline
+			\textbf{MILL}  & P2(18)        & X             \\ \hline
+		\end{tabular}
+	\end{table}
+	W tabeli \ref{tab:heuristics3} widać, że dla głębokości drzewa gry równej 3, heurystyka MOVE wygrała obie rozgrywki bardzo szybko.
+	
+	\subsection{Wpływ heurystyki wyboru kolejności węzłów}
+	Algorytm alfa-beta można próbować dodatkowo usprawnić wprowadzając dodatkowe heurystyki służące do wyboru kolejności przeglądania węzłów na odpowiednich poziomach drzewa gry. Może to skutkować przycinaniem większej liczby gałęzi a tym samym szybszym działaniem. Należy tutaj jednak mieć na uwadze fakt, że takie sortowanie może skutkować innym prowadzeniem rozgrywki. Dzieje się tak, ponieważ przeprowadzane w ten sposób sortowanie nie zachowuje względnego porządku węzłów na różnych głębokościach.\\
+	Badanie zostanie przeprowadzone przy ustalonej głębokości drzewa gry - 2. Zestawione zostaną algorytm alfa-beta bez heurystyki wyboru kolejności węzłów, oraz z nią. Przeciwnikiem będzie algorytm alfa-beta z głębokością drzewa 2 i heurystyką PAWN. Przeprowadzone zostaną 3 różne rozgrywki - z różnymi heurystykami oceny planszy.
+	
+	\begin{table}[H]
+		\centering
+		\label{tab:node_heuristics}
+		\caption{Wyniki czasu działania i liczby przeglądanych węzłów dla algorytmu alfa-beta bez heurystyki i z włączoną heurystyką wyboru węzłów}
+		\begin{tabular}{|l|r|r|r|r|r|r|}
+			\hline
+			\textbf{}                                 & \multicolumn{3}{c|}{\textbf{Bez heurystyki}}                                                                                 & \multicolumn{3}{c|}{\textbf{Z heurystyką}}                                                                                   \\ \hline
+			\multicolumn{1}{|c|}{\textbf{Lp.}} & \multicolumn{1}{c|}{\textbf{Czas{[}s{]}}} & \multicolumn{1}{c|}{\textbf{Tury}} & \multicolumn{1}{c|}{\textbf{Liczba węzłów}} & \multicolumn{1}{c|}{\textbf{Czas{[}s{]}}} & \multicolumn{1}{c|}{\textbf{Tury}} & \multicolumn{1}{c|}{\textbf{Liczba węzłów}} \\ \hline
+			\textbf{1}                             & 0,681                                     & 61                                 & 27492                                       & 0,539                                     & 57                                 & 16457                                       \\ \hline
+			\textbf{2}                             & 0,689                                     & 77                                 & 25665                                       & 0,591                                     & 77                                 & 18186                                       \\ \hline
+			\textbf{3}                             & 0,768                                     & 31                                 & 35495                                       & 0,778                                     & 29                                 & 28365                                       \\ \hline
+		\end{tabular}
+	\end{table}
+	\paragraph{Wnioski}
+	Jak widać w tabeli \ref{tab:node_heuristics} heurystyka wyboru kolejności węzłów może pozytywnie wpłynąć na efektywność algorytmu alfa-beta. Należy jednak, tak jak wspomniano już wcześniej, mieć na uwadze fakt, że algorytm z taką heurystyką może podejmować inne decyzje niż bez niej.
+	\section{Profilowanie kodu}
+	Profilowanie kodu zostało z przyczyn technicznych przeprowadzone dla wersji programu bez interfejsu graficznego, przy pomocy profilera dostępnego w programie Visual Studio 2017.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\linewidth]{prof1.png}
+		\caption{Zrzut ekranu z profilera - cały program}
+		\label{fig:prof1}
+	\end{figure}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\linewidth]{prof2.png}
+		\caption{Zrzut ekranu z profilera - funkcja zwracająca stany gry dla pierwszej fazy rozgrywki}
+		\label{fig:prof2}
+	\end{figure}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\linewidth]{prof4.png}
+		\caption{Zrzut ekranu z profilera - funkcja tworząca następny stan gry poprzez umieszczenie pionka na planszy}
+		\label{fig:prof3}
+	\end{figure}
+	Jak widać na obrazkach \ref{fig:prof1} \ref{fig:prof2} i \ref{fig:prof3} najwięcej czasu procesora wykorzystywane jest na działanie funkcji tworzących następne stany gry z aktualnego. Jako że jest to w najczęściej wykonywana w badanych algorytmach operacja, to nacisk na jej optymalizację został położony już wcześniej.
 	\section{Podsumowanie}
+	Algorytmy przeszukujące drzewo gry stanowią dobre rozwiązanie dla rozwiązywania gier turowych. Przy zakodowaniu odpowiedniej wiedzy w heurystykach oceny stanu planszy, algorytmy te potrafią sprawiać wrażenie naprawdę inteligentnych i grać dużo lepiej niż przeciętny człowiek. Z dwóch przebadanych algorytmów lepszym wyborem jest algorytm alfa-beta, ponieważ potrafi podejmować te same decyzje szybciej niż min-max bez żadnych usprawnień. Tym samym może on przeglądać drzewo gry do większej głębokości w tym samym czasie i podejmować lepsze decyzje.
 \end{document}

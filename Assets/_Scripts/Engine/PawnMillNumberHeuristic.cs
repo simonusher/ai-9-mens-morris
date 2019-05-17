@@ -2,7 +2,6 @@
 public class PawnMillNumberHeuristic : SimplePawnNumberHeuristic
 {
     private static readonly int DEFAULT_MILL_WEIGHT = 18;
-    private static readonly int CLOSED_MILL_WEIGHT = 26;
     public override double Evaluate(GameState gameState)
     {
         double evaluation = base.Evaluate(gameState);

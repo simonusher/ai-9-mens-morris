@@ -26,7 +26,7 @@ public class FastAlphaBetaAiPlayer : AiPlayer
         }
     }
 
-    public void MakeMove()
+    public override void MakeMove()
     {
         GameTreeNode bestPossibleMove = null;
         GameState currentState = game.GameState;
@@ -43,6 +43,7 @@ public class FastAlphaBetaAiPlayer : AiPlayer
 
     private GameTreeNode MinMax(GameState currentState, int depth, double alpha, double beta, bool maximizingPlayer)
     {
+        visitedNodes++;
         GameTreeNode bestMove = null;
         if (depth == 0 || currentState.WinningPlayer != PlayerNumber.None)
         {
