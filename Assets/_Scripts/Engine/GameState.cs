@@ -461,7 +461,7 @@ public class GameState
         List<Move> allMoves = new List<Move>();
         List<Field> playersFields = board.GetPlayerFields(playerNumber);
         int playerPawns = playersFields.Count;
-        if (playerPawns <= PlayerData.FLYING_PAWNS_NUMBER)
+        if (playerPawns <= FLYING_PAWNS_NUMBER)
         {
             foreach (var fromField in playersFields)
             {
