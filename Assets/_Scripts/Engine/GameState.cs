@@ -131,6 +131,7 @@ public class GameState
         SecondPlayerMovesMade = other.SecondPlayerMovesMade;
         MovesUntilNow = string.Copy(other.MovesUntilNow);
     }
+
     public void HandleSelection(int fieldIndex)
     {
         if (PawnsToRemove > 0)
@@ -147,6 +148,35 @@ public class GameState
         }
         CheckGameStateChanged();
         OnGameStateChanged();
+    }
+
+    public void HandlePawnRemoval(int fieldIndex)
+    {
+        Field field = CurrentBoard.GetField(fieldIndex);
+        if (!field.Empty)
+        {
+            if (!field.BelongsTo(CurrentMovingPlayer))
+            {
+                RemovePawn(field);
+            }
+        }
+    }
+
+    private void RemovePawn(int index)
+    {
+        CurrentBoard.GetField(index).Reset();
+    }
+
+    private void RemovePawn(Field field)
+    {
+        field.Reset();
+        LogRemoveMove(CurrentMovingPlayer, field.FieldIndex);
+        PawnsToRemove--;
+        RecalculateActiveMills();
+        if (PawnsToRemove == 0)
+        {
+            SwitchPlayer();
+        }
     }
 
     private void CheckGameStateChanged()
@@ -220,36 +250,6 @@ public class GameState
         } else
         {
             SecondPlayerMovesMade++;
-        }
-    }
-
-    public void HandlePawnRemoval(int fieldIndex)
-    {
-        Field field = CurrentBoard.GetField(fieldIndex);
-        if (!field.Empty)
-        {
-            if (!field.BelongsTo(CurrentMovingPlayer))
-            {
-                RemovePawn(field);
-            }
-        }
-    }
-
-    private void RemovePawn(int index)
-    {
-        CurrentBoard.GetField(index).Reset();
-    }
-
-    private void RemovePawn(Field field)
-    {
-        field.Reset();
-        LogRemoveMove(CurrentMovingPlayer, field.FieldIndex);
-        PawnsToRemove--;
-        //MovesMade++;
-        RecalculateActiveMills();
-        if (PawnsToRemove == 0)
-        {
-            SwitchPlayer();
         }
     }
 
@@ -519,6 +519,94 @@ public class GameState
         return possibleFields;
     }
 
+    public MillDifference GetMillDifference(HashSet<Mill> previousMills, Board board)
+    {
+        HashSet<Mill> activeMills = GetActiveMills(board);
+        HashSet<Mill> newActiveMills = new HashSet<Mill>(activeMills);
+        newActiveMills.ExceptWith(previousMills);
+        return new MillDifference(activeMills, newActiveMills);
+    }
+
+    private HashSet<Mill> MillDifference(GameState other)
+    {
+        HashSet<Mill> millDifference = new HashSet<Mill>(this.ActiveMills);
+        millDifference.ExceptWith(other.ActiveMills);
+        return millDifference;
+    }
+
+    public HashSet<int> GetCurrentPlayerPossibleMoveIndices()
+    {
+        if (LastSelectedField == null)
+        {
+            return null;
+        }
+        List<Field> fields;
+        if (CurrentPlayersPawnsLeft <= FLYING_PAWNS_NUMBER)
+        {
+            fields = GetPossibleNewFieldsFlying(LastSelectedField, CurrentBoard);
+        }
+        else
+        {
+            fields = GetPossibleNewFields(LastSelectedField, CurrentBoard);
+        }
+        HashSet<int> indices = new HashSet<int>();
+        foreach (var field in fields)
+        {
+            indices.Add(field.FieldIndex);
+        }
+        return indices;
+    }
+
+    private static HashSet<Mill> GetActiveMills(Board board)
+    {
+        HashSet<Mill> activeMills = new HashSet<Mill>();
+        Mill mill;
+
+        for (int i = 0; i < POSSIBLE_MILLS.Length; i++)
+        {
+            mill = POSSIBLE_MILLS[i];
+            PlayerNumber playerMillNumber = board.GetField(mill.MillIndices[0]).PawnPlayerNumber;
+            if (playerMillNumber != PlayerNumber.None)
+            {
+                bool millPossible = true;
+                for (int j = 1; j < mill.MillIndices.Count && millPossible; j++)
+                {
+                    if (playerMillNumber != board.GetField(mill.MillIndices[j]).PawnPlayerNumber)
+                    {
+                        millPossible = false;
+                    }
+                }
+
+                if (millPossible)
+                {
+                    activeMills.Add(mill);
+                }
+            }
+        }
+
+        return activeMills;
+    }
+
+    private void LogMoveMove(PlayerNumber player, int fieldIndexFrom, int fieldIndexTo)
+    {
+        LogMove(player, " move " + fieldNames[fieldIndexFrom] + "/" + fieldNames[fieldIndexTo]);
+    }
+
+    private void LogPlaceMove(PlayerNumber player, int fieldIndex)
+    {
+        LogMove(player, " place " + fieldNames[fieldIndex]);
+    }
+
+    private void LogRemoveMove(PlayerNumber player, int fieldIndex)
+    {
+        LogMove(player, " remove " + fieldNames[fieldIndex]);
+    }
+
+    private void LogMove(PlayerNumber player, string move)
+    {
+        MovesUntilNow += playerNames[player] + ": " + move + "\n";
+    }
+
     static GameState()
     {
         InitializeMills();
@@ -612,91 +700,5 @@ public class GameState
         fieldNames[21] = "A7";
         fieldNames[22] = "D7";
         fieldNames[23] = "G7";
-    }
-
-    private static HashSet<Mill> GetActiveMills(Board board)
-    {
-        HashSet<Mill> activeMills = new HashSet<Mill>();
-        Mill mill;
-
-        for (int i = 0; i < POSSIBLE_MILLS.Length; i++)
-        {
-            mill = POSSIBLE_MILLS[i];
-            PlayerNumber playerMillNumber = board.GetField(mill.MillIndices[0]).PawnPlayerNumber;
-            if (playerMillNumber != PlayerNumber.None)
-            {
-                bool millPossible = true;
-                for (int j = 1; j < mill.MillIndices.Count && millPossible; j++)
-                {
-                    if (playerMillNumber != board.GetField(mill.MillIndices[j]).PawnPlayerNumber)
-                    {
-                        millPossible = false;
-                    }
-                }
-
-                if (millPossible)
-                {
-                    activeMills.Add(mill);
-                }
-            }
-        }
-
-        return activeMills;
-    }
-    public MillDifference GetMillDifference(HashSet<Mill> previousMills, Board board)
-    {
-        HashSet<Mill> activeMills = GetActiveMills(board);
-        HashSet<Mill> newActiveMills = new HashSet<Mill>(activeMills);
-        newActiveMills.ExceptWith(previousMills);
-        return new MillDifference(activeMills, newActiveMills);
-    }
-
-    private HashSet<Mill> MillDifference(GameState other)
-    {
-        HashSet<Mill> millDifference = new HashSet<Mill>(this.ActiveMills);
-        millDifference.ExceptWith(other.ActiveMills);
-        return millDifference;
-    }
-
-    public HashSet<int> GetCurrentPlayerPossibleMoveIndices()
-    {
-        if(LastSelectedField == null)
-        {
-            return null;
-        }
-        List<Field> fields;
-        if (CurrentPlayersPawnsLeft <= FLYING_PAWNS_NUMBER)
-        {
-            fields = GetPossibleNewFieldsFlying(LastSelectedField, CurrentBoard);
-        } else
-        {
-            fields = GetPossibleNewFields(LastSelectedField, CurrentBoard);
-        }
-        HashSet<int> indices = new HashSet<int>();
-        foreach(var field in fields)
-        {
-            indices.Add(field.FieldIndex);
-        }
-        return indices;
-    }
-
-    private void LogMoveMove(PlayerNumber player, int fieldIndexFrom, int fieldIndexTo)
-    {
-        LogMove(player, " move " + fieldNames[fieldIndexFrom] + "/" + fieldNames[fieldIndexTo]);
-    }
-
-    private void LogPlaceMove(PlayerNumber player, int fieldIndex)
-    {
-        LogMove(player, " place " + fieldNames[fieldIndex]);
-    }
-
-    private void LogRemoveMove(PlayerNumber player, int fieldIndex)
-    {
-        LogMove(player, " remove " + fieldNames[fieldIndex]);
-    }
-
-    private void LogMove(PlayerNumber player, string move)
-    {
-        MovesUntilNow += playerNames[player] + ": " + move + "\n";
     }
 }
