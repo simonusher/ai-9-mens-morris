@@ -12,7 +12,7 @@ public class GameUIController : MonoBehaviour
     private static readonly int AI_DROPDOWN_NUMBER = 1;
     private static readonly int MIN_MAX_DROPDOWN_NUMBER = 0;
     private static readonly int ALPHA_BETA_DROPDOWN_NUMBER = 1;
-    private static readonly int FAST_ALPHA_BETA_DROPDOWN_NUMBER = 1;
+    private static readonly int FAST_ALPHA_BETA_DROPDOWN_NUMBER = 2;
 
     private static Dictionary<int, Func<Heuristic>> heuristicDictionary;
 
